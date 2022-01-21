@@ -1,4 +1,4 @@
-package br.com.zup.ZupNotion.Config;
+package br.com.zup.ZupNotion.config;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package br.com.zup.ZupNotion.Exceptions;
+package br.com.zup.ZupNotion.exceptions;
 
 public class EmailJaExistenteException extends RuntimeException{
     public EmailJaExistenteException(String message) {
