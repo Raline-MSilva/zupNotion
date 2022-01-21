@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class UsuarioService {
@@ -55,9 +58,14 @@ public class UsuarioService {
     }
 
     public boolean validarEmailZup(String email) {
+        Pattern p = Pattern.compile(".+@.+\\.[a-z]+");
+        Matcher m = p.matcher(email);
+        boolean padraoDeEmail = m.matches();
+        Optional <String> prefixoDoEmail = Arrays.stream(email.split("@")).findFirst();
+        String sufixoEmailASerValidado = email.replaceAll(prefixoDoEmail.a, "");
         boolean dominio = Arrays.stream(email.split("@")).findFirst().equals("zup.com.br");
 
-        if (!dominio) {
+        if (!dominio && padraoDeEmail ) {
             throw new DominioInvalidoException("Permitido cadastro apenas para email Zup!");
 
         } else {
