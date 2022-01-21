@@ -1,9 +1,21 @@
 package br.com.zup.ZupNotion.usuario;
 
+import br.com.zup.ZupNotion.Exceptions.EmailJaExistenteException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UsuarioService {
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    public Usuario verificarEmailExistente(Usuario usuario){
+        if (usuarioRepository.existsByEmail(usuario.getEmail())){
+            throw new EmailJaExistenteException("Email já cadastrado!");
+        }
+        return usuarioRepository.save(usuario);
+    }
 
     public boolean senhaForte(String senha) {
 
