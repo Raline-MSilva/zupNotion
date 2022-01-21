@@ -13,15 +13,21 @@ public class UsuarioService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    public Usuario cadastrarUsuario(Usuario usuario) {
-        return usuarioRepository.save(usuario);
+    public void cadastrarUsuario(Usuario usuario) {
+        if (
+                validarEmailZup(usuario.getEmail()) &&
+                verificarEmailNaoExistente(usuario.getEmail()) &&
+                senhaForte(usuario.getSenha())
+        )
+            usuarioRepository.save(usuario);
     }
 
-    public Usuario verificarEmailExistente(Usuario usuario) {
-        if (usuarioRepository.existsByEmail(usuario.getEmail())) {
-            throw new EmailJaExistenteException("Email já cadastrado!");
+    public boolean verificarEmailNaoExistente(String email) {
+        if (!usuarioRepository.existsByEmail(email)) {
+            return true;
         }
-        return usuarioRepository.save(usuario);
+        throw new EmailJaExistenteException("Email já cadastrado!");
+
     }
 
     public boolean senhaForte(String senha) {
@@ -48,8 +54,8 @@ public class UsuarioService {
         return achouMaiuscula && achouMinuscula && achouNumero && achouSimbolo;
     }
 
-    public boolean validarEmailZup(Usuario usuario) {
-        boolean dominio = Arrays.stream(usuario.getEmail().split("@")).findFirst().equals("zup.com.br");
+    public boolean validarEmailZup(String email) {
+        boolean dominio = Arrays.stream(email.split("@")).findFirst().equals("zup.com.br");
 
         if (!dominio) {
             throw new DominioInvalidoException("Permitido cadastro apenas para email Zup!");
