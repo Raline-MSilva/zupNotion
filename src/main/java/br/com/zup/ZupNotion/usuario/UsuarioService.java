@@ -1,2 +1,5 @@
-package br.com.zup.ZupNotion.usuario;public class UsuarioService {
+package br.com.zup.ZupNotion.usuario;
+
+public class UsuarioService {
+
 }
