@@ -1,8 +1,11 @@
 package br.com.zup.ZupNotion.usuario;
 
+import br.com.zup.ZupNotion.Exceptions.DominioInvalidoException;
 import br.com.zup.ZupNotion.Exceptions.EmailJaExistenteException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
 
 @Service
 public class UsuarioService {
@@ -10,12 +13,12 @@ public class UsuarioService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    public Usuario cadastrarUsuario (Usuario usuario){
+    public Usuario cadastrarUsuario(Usuario usuario) {
         return usuarioRepository.save(usuario);
     }
 
-    public Usuario verificarEmailExistente(Usuario usuario){
-        if (usuarioRepository.existsByEmail(usuario.getEmail())){
+    public Usuario verificarEmailExistente(Usuario usuario) {
+        if (usuarioRepository.existsByEmail(usuario.getEmail())) {
             throw new EmailJaExistenteException("Email já cadastrado!");
         }
         return usuarioRepository.save(usuario);
@@ -43,7 +46,17 @@ public class UsuarioService {
         }
 
         return achouMaiuscula && achouMinuscula && achouNumero && achouSimbolo;
+    }
 
+    public boolean validarEmailZup(Usuario usuario) {
+        boolean dominio = Arrays.stream(usuario.getEmail().split("@")).findFirst().equals("zup.com.br");
+
+        if (!dominio) {
+            throw new DominioInvalidoException("Permitido cadastro apenas para email Zup!");
+
+        } else {
+            return true;
+        }
     }
 
 }
