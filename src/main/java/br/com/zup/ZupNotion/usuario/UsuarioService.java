@@ -10,6 +10,10 @@ public class UsuarioService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    public Usuario cadastrarUsuario (Usuario usuario){
+        return usuarioRepository.save(usuario);
+    }
+
     public Usuario verificarEmailExistente(Usuario usuario){
         if (usuarioRepository.existsByEmail(usuario.getEmail())){
             throw new EmailJaExistenteException("Email já cadastrado!");
