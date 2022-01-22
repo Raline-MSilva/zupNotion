@@ -58,16 +58,12 @@ public class UsuarioService {
     }
 
     public boolean validarEmailZup(String email) {
-        Pattern p = Pattern.compile(".+@.+\\.[a-z]+");
-        Matcher m = p.matcher(email);
-        boolean padraoDeEmail = m.matches();
-        Optional <String> prefixoDoEmail = Arrays.stream(email.split("@")).findFirst();
-        String sufixoEmailASerValidado = email.replaceAll(prefixoDoEmail.a, "");
-        boolean dominio = Arrays.stream(email.split("@")).findFirst().equals("zup.com.br");
 
-        if (!dominio && padraoDeEmail ) {
+        Pattern padrao = Pattern.compile(".+@zup.com.br");
+        Matcher buscador = padrao.matcher(email);
+        boolean eValido = buscador.matches();
+        if (!eValido) {
             throw new DominioInvalidoException("Permitido cadastro apenas para email Zup!");
-
         } else {
             return true;
         }
