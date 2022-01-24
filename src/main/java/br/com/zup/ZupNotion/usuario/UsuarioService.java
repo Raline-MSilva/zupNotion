@@ -1,6 +1,6 @@
 package br.com.zup.ZupNotion.usuario;
 
-import br.com.zup.ZupNotion.Exceptions.DominioInvalidoException;
+import br.com.zup.ZupNotion.exceptions.DominioInvalidoException;
 import br.com.zup.ZupNotion.exceptions.EmailJaExistenteException;
 import br.com.zup.ZupNotion.exceptions.SenhaInvalidaException;
 import org.springframework.beans.factory.annotation.Autowired;
