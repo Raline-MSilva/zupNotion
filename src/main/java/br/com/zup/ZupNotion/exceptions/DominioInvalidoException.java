@@ -1,4 +1,4 @@
-package br.com.zup.ZupNotion.Exceptions;
+package br.com.zup.ZupNotion.exceptions;
 
 public class DominioInvalidoException extends RuntimeException {
     public DominioInvalidoException(String message) {
