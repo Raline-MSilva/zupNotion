@@ -1,4 +1,4 @@
-package br.com.zup.ZupNotion;
+package br.com.zup.ZupNotion.usuario;
 
 
 import br.com.zup.ZupNotion.services.EmailService;
