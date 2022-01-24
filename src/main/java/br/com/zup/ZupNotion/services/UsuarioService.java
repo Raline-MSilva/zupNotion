@@ -4,6 +4,7 @@ import br.com.zup.ZupNotion.exceptions.UsuarioNaoExisteException;
 import br.com.zup.ZupNotion.usuario.Usuario;
 import br.com.zup.ZupNotion.usuario.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -20,11 +21,20 @@ public class UsuarioService {
     @Autowired
     private SenhaService senhaService;
 
+    @Autowired
+    private BCryptPasswordEncoder encoder;
+
     public void cadastrarUsuario(Usuario usuario) {
         emailService.verificarEmailNaoExistente(usuario.getEmail());
         emailService.validarEmailZup(usuario.getEmail());
         senhaService.verificarSenhaForte(usuario.getSenha());
+        criptografarSenha(usuario);
         usuarioRepository.save(usuario);
+    }
+
+    public void criptografarSenha(Usuario usuario){
+        String senhaEscondida = encoder.encode(usuario.getSenha());
+        usuario.setSenha(senhaEscondida);
     }
 
     public void alterarSenha(Usuario usuario) {
