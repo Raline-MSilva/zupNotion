@@ -1,5 +1,6 @@
 package br.com.zup.ZupNotion.usuario;
 
+import br.com.zup.ZupNotion.usuario.dtos.AlterarSenhaDTO;
 import br.com.zup.ZupNotion.usuario.dtos.CadastroUsuarioDTO;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,12 @@ public class UsuarioController {
     public void cadastrarUsuario(@RequestBody @Valid CadastroUsuarioDTO cadastroUsuarioDTO) {
         Usuario usuario = modelMapper.map(cadastroUsuarioDTO, Usuario.class);
         usuarioService.cadastrarUsuario(usuario);
+    }
+
+    @PutMapping("/esqueciSenha")
+    @ResponseStatus(HttpStatus.OK)
+    public void alterarSenha(@RequestBody @Valid AlterarSenhaDTO alterarSenhaDTO) {
+        usuarioService.alterarSenha(modelMapper.map(alterarSenhaDTO, Usuario.class));
     }
 
 }
