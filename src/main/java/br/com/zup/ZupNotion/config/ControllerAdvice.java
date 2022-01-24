@@ -1,5 +1,6 @@
 package br.com.zup.ZupNotion.config;
 
+import br.com.zup.ZupNotion.exceptions.EmailJaExistenteException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -21,4 +22,10 @@ public class ControllerAdvice {
         }
         return mensagemDeErros;
     }
+    @ExceptionHandler(EmailJaExistenteException.class)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    public MensagemDeErro tratarExcecaoEmailJaExistenteException(EmailJaExistenteException exception){
+        return new MensagemDeErro(exception.getMessage());
+    }
+
 }
