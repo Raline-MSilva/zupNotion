@@ -1,5 +1,6 @@
 package br.com.zup.ZupNotion.config;
 
+import br.com.zup.ZupNotion.exceptions.DominioInvalidoException;
 import br.com.zup.ZupNotion.exceptions.EmailJaExistenteException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
@@ -28,4 +29,9 @@ public class ControllerAdvice {
         return new MensagemDeErro(exception.getMessage());
     }
 
+    @ExceptionHandler(DominioInvalidoException.class)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    public MensagemDeErro tratarExcecaoDominioInvalidoException(DominioInvalidoException exception){
+        return new MensagemDeErro(exception.getMessage());
+    }
 }
