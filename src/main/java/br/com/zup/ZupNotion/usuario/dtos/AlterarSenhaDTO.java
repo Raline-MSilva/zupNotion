@@ -7,7 +7,7 @@ import javax.validation.constraints.NotBlank;
 @Data
 public class AlterarSenhaDTO {
     private String email;
-    @NotBlank(message = "O campo não pode estar em branco")
+    @NotBlank(message = "{validacao.not-blank}")
     private String senha;
 
 }
