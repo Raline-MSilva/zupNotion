@@ -3,6 +3,7 @@ package br.com.zup.ZupNotion.usuario;
 import br.com.zup.ZupNotion.exceptions.DominioInvalidoException;
 import br.com.zup.ZupNotion.exceptions.EmailJaExistenteException;
 import br.com.zup.ZupNotion.exceptions.SenhaInvalidaException;
+import br.com.zup.ZupNotion.exceptions.UsuarioNaoExisteException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -72,7 +73,7 @@ public class UsuarioService {
         Optional<Usuario> usuarioOptional = usuarioRepository.findByEmail(usuario.getEmail());
 
         if (usuarioOptional.isEmpty()) {
-            throw new RuntimeException("Usuário não existe");
+            throw new UsuarioNaoExisteException("Usuário não existe");
         }
 
         Usuario usuarioBanco = usuarioOptional.get();
