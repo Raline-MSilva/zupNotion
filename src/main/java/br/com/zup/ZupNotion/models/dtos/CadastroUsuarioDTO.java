@@ -1,4 +1,4 @@
-package br.com.zup.ZupNotion.usuario.dtos;
+package br.com.zup.ZupNotion.models.dtos;
 
 import lombok.Data;
 
@@ -15,4 +15,5 @@ public class CadastroUsuarioDTO {
     private String email;
     @NotBlank(message = "{validacao.not-blank}")
     private String senha;
+
 }

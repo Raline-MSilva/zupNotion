@@ -1,4 +1,4 @@
-package br.com.zup.ZupNotion.usuario;
+package br.com.zup.ZupNotion.models;
 
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
@@ -9,6 +9,7 @@ import javax.persistence.*;
 @Table(name = "usuarios")
 @Data
 public class Usuario {
+
     @Id
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
