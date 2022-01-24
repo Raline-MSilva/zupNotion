@@ -6,6 +6,7 @@ import br.com.zup.ZupNotion.exceptions.SenhaInvalidaException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -67,4 +68,19 @@ public class UsuarioService {
 
     }
 
+    public void alterarSenha(Usuario usuario) {
+        Optional<Usuario> usuarioOptional = usuarioRepository.findByEmail(usuario.getEmail());
+
+        if (usuarioOptional.isEmpty()) {
+            throw new RuntimeException("Usuário não existe");
+        }
+
+        Usuario usuarioBanco = usuarioOptional.get();
+        usuarioBanco.setSenha(usuario.getSenha());
+
+        usuarioRepository.save(usuarioBanco);
+    }
+
 }
+
+
