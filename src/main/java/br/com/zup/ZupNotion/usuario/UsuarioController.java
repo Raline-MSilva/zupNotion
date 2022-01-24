@@ -1,5 +1,6 @@
 package br.com.zup.ZupNotion.usuario;
 
+import br.com.zup.ZupNotion.services.UsuarioService;
 import br.com.zup.ZupNotion.usuario.dtos.AlterarSenhaDTO;
 import br.com.zup.ZupNotion.usuario.dtos.CadastroUsuarioDTO;
 import org.modelmapper.ModelMapper;

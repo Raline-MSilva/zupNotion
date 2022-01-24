@@ -8,11 +8,11 @@ import javax.validation.constraints.Size;
 @Data
 public class CadastroUsuarioDTO {
 
-    @NotBlank(message = "O campo não pode estar em branco")
-    @Size(min = 2, message = "O campo deve ter pelo menos dois caracteres")
+    @NotBlank(message = "{validacao.not-blank}")
+    @Size(min = 2, message = "{validacao.valor-minimo}")
     private String nome;
-    @NotBlank(message = "O campo não pode estar em branco")
+    @NotBlank(message = "{validacao.not-blank}")
     private String email;
-    @NotBlank(message = "O campo não pode estar em branco")
+    @NotBlank(message = "{validacao.not-blank}")
     private String senha;
 }
