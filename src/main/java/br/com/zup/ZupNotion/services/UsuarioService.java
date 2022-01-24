@@ -1,5 +1,6 @@
 package br.com.zup.ZupNotion.usuario;
 
+import br.com.zup.ZupNotion.email.EmailService;
 import br.com.zup.ZupNotion.exceptions.DominioInvalidoException;
 import br.com.zup.ZupNotion.exceptions.EmailJaExistenteException;
 import br.com.zup.ZupNotion.exceptions.SenhaInvalidaException;
@@ -17,17 +18,14 @@ public class UsuarioService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @Autowired
+    private EmailService emailService;
+
     public void cadastrarUsuario(Usuario usuario) {
-        verificarEmailNaoExistente(usuario.getEmail());
-        validarEmailZup(usuario.getEmail());
+        emailService.verificarEmailNaoExistente(usuario.getEmail());
+        emailService.validarEmailZup(usuario.getEmail());
         verificarSenhaForte(usuario.getSenha());
         usuarioRepository.save(usuario);
-    }
-
-    public void verificarEmailNaoExistente(String email) {
-        if (usuarioRepository.existsByEmail(email)) {
-            throw new EmailJaExistenteException("Email já cadastrado!");
-        }
     }
 
     public void verificarSenhaForte(String senha) {
@@ -58,16 +56,7 @@ public class UsuarioService {
 
     }
 
-    public void validarEmailZup(String email) {
 
-        Pattern padrao = Pattern.compile(".+@zup.com.br");
-        Matcher buscador = padrao.matcher(email);
-        boolean eValido = buscador.matches();
-        if (!eValido) {
-            throw new DominioInvalidoException("Permitido cadastro apenas para email Zup!");
-        }
-
-    }
 
     public void alterarSenha(Usuario usuario) {
         Optional<Usuario> usuarioOptional = usuarioRepository.findByEmail(usuario.getEmail());
