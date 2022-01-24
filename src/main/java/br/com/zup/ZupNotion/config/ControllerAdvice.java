@@ -2,6 +2,7 @@ package br.com.zup.ZupNotion.config;
 
 import br.com.zup.ZupNotion.exceptions.DominioInvalidoException;
 import br.com.zup.ZupNotion.exceptions.EmailJaExistenteException;
+import br.com.zup.ZupNotion.exceptions.SenhaInvalidaException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -34,4 +35,11 @@ public class ControllerAdvice {
     public MensagemDeErro tratarExcecaoDominioInvalidoException(DominioInvalidoException exception){
         return new MensagemDeErro(exception.getMessage());
     }
+
+    @ExceptionHandler(SenhaInvalidaException.class)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    public MensagemDeErro tratarExcecaoSenhaInvalidaException(SenhaInvalidaException exception){
+        return new MensagemDeErro(exception.getMessage());
+    }
+
 }
