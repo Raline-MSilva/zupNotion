@@ -1,24 +1,29 @@
 package br.com.zup.ZupNotion;
 
 
+import br.com.zup.ZupNotion.services.EmailService;
+import br.com.zup.ZupNotion.services.SenhaService;
 import br.com.zup.ZupNotion.usuario.Usuario;
 import br.com.zup.ZupNotion.usuario.UsuarioRepository;
-import br.com.zup.ZupNotion.usuario.UsuarioService;
-import org.junit.jupiter.api.Assertions;
+import br.com.zup.ZupNotion.services.UsuarioService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
+import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import javax.validation.constraints.AssertTrue;
-
 @SpringBootTest
 public class UsuarioServiceTest {
     @MockBean
     private UsuarioRepository usuarioRepository;
+
+    @MockBean
+    private EmailService emailService;
+
+    @MockBean
+    private SenhaService senhaService;
 
     @Autowired
     private UsuarioService usuarioService;
@@ -35,17 +40,13 @@ public class UsuarioServiceTest {
 
     @Test
     public void testarCadastrarUsuario(){
-        Mockito.when(usuarioRepository.save(Mockito.any(Usuario.class)));
-        Mockito.when(usuarioRepository.existsByEmail(usuario.getEmail())).thenReturn(false);
+        usuarioService.cadastrarUsuario(usuario);
+        InOrder inOrder = Mockito.inOrder(emailService, emailService, senhaService);
+
+        inOrder.verify(emailService, Mockito.times(1)).verificarEmailNaoExistente(usuario.getEmail());
+        inOrder.verify(emailService, Mockito.times(1)).validarEmailZup(usuario.getEmail());
+        inOrder.verify(senhaService, Mockito.times(1)).verificarSenhaForte(usuario.getSenha());
 
     }
 
-    /*@Test
-    public void testandoValidacaoDeEmailZup(){
-        var validacaoDeEmail =
-        usuarioService.validarEmailZup("raline@zup.com.br");
-        Assertions.assertTrue(validacaoDeEmail);
-    }
-
-     */
 }
