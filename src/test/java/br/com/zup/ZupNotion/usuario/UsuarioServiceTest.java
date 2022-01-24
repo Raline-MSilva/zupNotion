@@ -1,10 +1,10 @@
 package br.com.zup.ZupNotion.usuario;
 
 
+import br.com.zup.ZupNotion.models.Usuario;
+import br.com.zup.ZupNotion.repositories.UsuarioRepository;
 import br.com.zup.ZupNotion.services.EmailService;
 import br.com.zup.ZupNotion.services.SenhaService;
-import br.com.zup.ZupNotion.usuario.Usuario;
-import br.com.zup.ZupNotion.usuario.UsuarioRepository;
 import br.com.zup.ZupNotion.services.UsuarioService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,12 +41,12 @@ public class UsuarioServiceTest {
     @Test
     public void testarCadastrarUsuario(){
         usuarioService.cadastrarUsuario(usuario);
-        InOrder inOrder = Mockito.inOrder(emailService, emailService, senhaService);
+        InOrder inOrder = Mockito.inOrder(emailService, emailService, senhaService, senhaService);
 
-        inOrder.verify(emailService, Mockito.times(1)).verificarEmailNaoExistente(usuario.getEmail());
+        inOrder.verify(emailService, Mockito.times(1)).verificarEmailExistente(usuario.getEmail());
         inOrder.verify(emailService, Mockito.times(1)).validarEmailZup(usuario.getEmail());
         inOrder.verify(senhaService, Mockito.times(1)).verificarSenhaForte(usuario.getSenha());
-
+        inOrder.verify(senhaService, Mockito.times(1)).criptografarSenha(usuario);
     }
 
 }

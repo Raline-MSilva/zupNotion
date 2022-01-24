@@ -24,5 +24,5 @@ public class ConfiguracaoMensagemValidacao {
         bean.setValidationMessageSource(mapearMensagens());
         return bean;
     }
-}
 
+}
