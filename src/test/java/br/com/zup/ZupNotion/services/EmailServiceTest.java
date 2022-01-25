@@ -1,11 +1,13 @@
 package br.com.zup.ZupNotion.services;
 
 import br.com.zup.ZupNotion.exceptions.DominioInvalidoException;
+import br.com.zup.ZupNotion.exceptions.EmailJaExistenteException;
 import br.com.zup.ZupNotion.models.Usuario;
 import br.com.zup.ZupNotion.repositories.UsuarioRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -40,6 +42,14 @@ public class EmailServiceTest {
         String email = "maria@gmail.com";
         Assertions.assertThrows(DominioInvalidoException.class, ()-> {
             emailService.validarEmailZup(email);
+        });
+    }
+
+    @Test
+    public void testarVerificarEmailExistente(){
+        Mockito.when(usuarioRepository.existsByEmail(usuario.getEmail())).thenReturn(true);
+        Assertions.assertThrows(EmailJaExistenteException.class, () -> {
+            emailService.verificarEmailExistente(usuario.getEmail());
         });
     }
 
