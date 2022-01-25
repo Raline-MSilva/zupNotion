@@ -21,13 +21,14 @@ public class EmailService {
         }
     }
 
-    public void validarEmailZup(String email) {
+    public boolean validarEmailZup(String email) {
         Pattern padrao = Pattern.compile(".+@zup.com.br");
         Matcher buscador = padrao.matcher(email);
         boolean eValido = buscador.matches();
         if (!eValido) {
             throw new DominioInvalidoException("Permitido cadastro apenas para email Zup!");
         }
+        return true;
     }
 
 }
