@@ -21,7 +21,6 @@ public class UsuarioService {
     public void cadastrarUsuario(Usuario usuario) {
         emailService.verificarEmailExistente(usuario.getEmail());
         emailService.validarEmailZup(usuario.getEmail());
-        senhaService.verificarSenhaForte(usuario.getSenha());
         senhaService.criptografarSenha(usuario);
         usuarioRepository.save(usuario);
     }
