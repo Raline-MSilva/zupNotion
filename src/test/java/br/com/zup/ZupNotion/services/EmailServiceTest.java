@@ -40,17 +40,19 @@ public class EmailServiceTest {
     @Test
     public void testarExcecaoEmailNaoZup(){
         String email = "maria@gmail.com";
-        Assertions.assertThrows(DominioInvalidoException.class, ()-> {
+        DominioInvalidoException exception = Assertions.assertThrows(DominioInvalidoException.class, ()-> {
             emailService.validarEmailZup(email);
         });
+        Assertions.assertEquals("Permitido cadastro apenas para email Zup!", exception.getMessage());
     }
 
     @Test
     public void testarVerificarEmailExistente(){
         Mockito.when(usuarioRepository.existsByEmail(usuario.getEmail())).thenReturn(true);
-        Assertions.assertThrows(EmailJaExistenteException.class, () -> {
+        EmailJaExistenteException exception = Assertions.assertThrows(EmailJaExistenteException.class, () -> {
             emailService.verificarEmailExistente(usuario.getEmail());
         });
+        Assertions.assertEquals("Email já cadastrado!", exception.getMessage());
     }
 
 }
