@@ -42,11 +42,10 @@ public class UsuarioServiceTest {
     @Test
     public void testarCadastrarUsuario(){
         usuarioService.cadastrarUsuario(usuario);
-        InOrder inOrder = Mockito.inOrder(emailService, emailService, senhaService, senhaService);
+        InOrder inOrder = Mockito.inOrder(emailService, emailService, senhaService);
 
         inOrder.verify(emailService, Mockito.times(1)).verificarEmailExistente(usuario.getEmail());
         inOrder.verify(emailService, Mockito.times(1)).validarEmailZup(usuario.getEmail());
-        inOrder.verify(senhaService, Mockito.times(1)).verificarSenhaForte(usuario.getSenha());
         inOrder.verify(senhaService, Mockito.times(1)).criptografarSenha(usuario);
     }
 

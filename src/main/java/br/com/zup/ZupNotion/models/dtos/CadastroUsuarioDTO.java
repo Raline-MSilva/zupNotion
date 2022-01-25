@@ -15,7 +15,7 @@ public class CadastroUsuarioDTO {
     @NotBlank(message = "{validacao.not-blank}")
     private String email;
     @NotBlank(message = "{validacao.not-blank}")
-    @Pattern(regexp ="^(?=.[A-Z].[A-Z])(?=.[!@#$&])(?=.[0-9].[0-9])(?=.[a-z].[a-z].*[a-z]).{8}$",
+    @Pattern(regexp ="^(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9])(?=.*[a-z]).{8}$",
             message="{validacao.senha-forte}")
     private String senha;
 
