@@ -18,11 +18,11 @@ public class UsuarioService {
     @Autowired
     private SenhaService senhaService;
 
-    public void cadastrarUsuario(Usuario usuario) {
+    public Usuario cadastrarUsuario(Usuario usuario) {
         emailService.verificarEmailExistente(usuario.getEmail());
         emailService.validarEmailZup(usuario.getEmail());
         senhaService.criptografarSenha(usuario);
-        usuarioRepository.save(usuario);
+        return usuarioRepository.save(usuario);
     }
 
 }

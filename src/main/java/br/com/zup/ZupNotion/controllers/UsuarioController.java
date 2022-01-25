@@ -1,6 +1,7 @@
 package br.com.zup.ZupNotion.controllers;
 
 import br.com.zup.ZupNotion.models.Usuario;
+import br.com.zup.ZupNotion.models.dtos.CadastroRetornoDTO;
 import br.com.zup.ZupNotion.services.SenhaService;
 import br.com.zup.ZupNotion.services.UsuarioService;
 import br.com.zup.ZupNotion.models.dtos.AlterarSenhaDTO;
@@ -25,8 +26,10 @@ public class UsuarioController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void cadastrarUsuario(@RequestBody @Valid CadastroUsuarioDTO cadastroUsuarioDTO) {
-        usuarioService.cadastrarUsuario(modelMapper.map(cadastroUsuarioDTO, Usuario.class));
+    public CadastroRetornoDTO cadastrarUsuario(@RequestBody @Valid CadastroUsuarioDTO cadastroUsuarioDTO) {
+        Usuario usuario = modelMapper.map(cadastroUsuarioDTO, Usuario.class);
+        usuarioService.cadastrarUsuario(usuario);
+        return modelMapper.map(usuario, CadastroRetornoDTO.class);
     }
 
     @PutMapping("/esqueciSenha")
