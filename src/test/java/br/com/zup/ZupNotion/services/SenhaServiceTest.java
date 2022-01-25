@@ -19,9 +19,10 @@ public class SenhaServiceTest {
 
     @Test
     public void testandoSenhaComExcecao(){
-        Assertions.assertThrows(SenhaInvalidaException.class, ()-> {
+        SenhaInvalidaException exception = Assertions.assertThrows(SenhaInvalidaException.class, ()-> {
             senhaService.verificarSenhaForte("abc$");
         });
+        Assertions.assertEquals("Senha inválida", exception.getMessage());
     }
 
 }
