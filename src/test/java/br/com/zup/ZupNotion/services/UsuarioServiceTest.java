@@ -1,4 +1,4 @@
-package br.com.zup.ZupNotion.usuario;
+package br.com.zup.ZupNotion.services;
 
 
 import br.com.zup.ZupNotion.models.Usuario;
@@ -6,6 +6,7 @@ import br.com.zup.ZupNotion.repositories.UsuarioRepository;
 import br.com.zup.ZupNotion.services.EmailService;
 import br.com.zup.ZupNotion.services.SenhaService;
 import br.com.zup.ZupNotion.services.UsuarioService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
