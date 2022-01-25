@@ -15,10 +15,11 @@ public class EmailService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    public void verificarEmailExistente(String email) {
+    public boolean verificarEmailExistente(String email) {
         if (usuarioRepository.existsByEmail(email)) {
             throw new EmailJaExistenteException("Email já cadastrado!");
         }
+        return true;
     }
 
     public boolean validarEmailZup(String email) {
