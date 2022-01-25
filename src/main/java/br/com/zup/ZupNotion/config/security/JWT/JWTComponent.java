@@ -34,4 +34,23 @@ public class JWTComponent {
             throw new TokenInvalidoException();
         }
     }
+
+    public boolean tokenValido(String token){
+        try{
+            Claims claims = pegarClaims(token);
+            Date dataAtual = new Date(System.currentTimeMillis());
+
+            String username = claims.getSubject();
+            Date vencimentoToken = claims.getExpiration();
+
+            if(username != null && vencimentoToken != null && dataAtual.before(vencimentoToken)){
+                return true;
+            }else {
+                return false;
+            }
+        }catch (TokenInvalidoException e){
+            return false;
+        }
+    }
+
 }
