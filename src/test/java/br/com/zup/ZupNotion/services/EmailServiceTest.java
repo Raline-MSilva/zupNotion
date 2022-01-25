@@ -55,4 +55,12 @@ public class EmailServiceTest {
         Assertions.assertEquals("Email já cadastrado!", exception.getMessage());
     }
 
+    @Test
+    public void testarVerificarEmailExistenteSemExcecao(){
+        Mockito.when(usuarioRepository.existsByEmail(usuario.getEmail())).thenReturn(false);
+        boolean emailExistente = emailService.verificarEmailExistente(usuario.getEmail());
+        Assertions.assertTrue(emailExistente);
+
+    }
+
 }
