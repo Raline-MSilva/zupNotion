@@ -63,4 +63,18 @@ public class TarefaControllerTest {
 
     }
 
+    @Test
+    @WithMockUser("tarefa@tarefa.com")
+    public void testarCadastrarTarefa() throws Exception{
+        Mockito.when(tarefaService.cadastrarTarefa(Mockito.any(Tarefa.class))).thenReturn(tarefa);
+        String json = objectMapper.writeValueAsString(cadastroTarefaDTO);
+
+        ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.post("/tarefas")
+                        .content(json).contentType(MediaType.APPLICATION_JSON))
+                .andExpect((MockMvcResultMatchers.status().is(201)));
+
+        String jsonResposta = resultado.andReturn().getResponse().getContentAsString();
+        RespostaTarefaDTO respostaTarefaDTO = objectMapper.readValue(jsonResposta, RespostaTarefaDTO.class);
+    }
+
 }
