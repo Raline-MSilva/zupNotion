@@ -1,5 +1,6 @@
 package br.com.zup.ZupNotion.services;
 
+import br.com.zup.ZupNotion.models.Tarefa;
 import br.com.zup.ZupNotion.repositories.TarefaRepository;
 import br.com.zup.ZupNotion.repositories.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,4 +15,7 @@ public class TarefaService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    public void cadastrarTarefa(Tarefa tarefa){
+        tarefaRepository.save(tarefa);
+    }
 }
