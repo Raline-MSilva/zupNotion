@@ -3,6 +3,7 @@ package br.com.zup.ZupNotion.models;
 import br.com.zup.ZupNotion.models.enums.Prioridade;
 import br.com.zup.ZupNotion.models.enums.Status;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -26,8 +27,11 @@ public class Tarefa {
     @Enumerated(EnumType.STRING)
     private Status status;
     @Column(name = "data_de_cadastro")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime dataDeCadastro;
     @Column(name = "estimativa_em_horas")
     private Duration estimativaEmHoras;
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private Usuario usuario;
 
 }

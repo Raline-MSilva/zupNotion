@@ -4,6 +4,7 @@ import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "usuarios")
@@ -20,5 +21,7 @@ public class Usuario {
     private String nome;
     @Column(nullable = false)
     private String senha;
+    @OneToMany
+    private List<Tarefa> tarefas;
 
 }
