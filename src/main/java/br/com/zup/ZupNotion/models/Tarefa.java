@@ -1,5 +1,6 @@
 package br.com.zup.ZupNotion.models;
 
+import br.com.zup.ZupNotion.models.enums.Prioridade;
 import lombok.Data;
 
 import javax.persistence.*;
