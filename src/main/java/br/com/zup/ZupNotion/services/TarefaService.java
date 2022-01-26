@@ -20,12 +20,12 @@ public class TarefaService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    public void cadastrarTarefa(Tarefa tarefa){
+    public Tarefa cadastrarTarefa(Tarefa tarefa){
         String id = tarefa.getUsuario().getId();
         if (usuarioRepository.existsById(id)){
             tarefa.setDataDeCadastro(LocalDateTime.now());
             tarefa.setStatus(Status.A_FAZER);
-            tarefaRepository.save(tarefa);
+            return tarefaRepository.save(tarefa);
         }
         throw new UsuarioNaoExisteException("Usuario não existe");
     }
