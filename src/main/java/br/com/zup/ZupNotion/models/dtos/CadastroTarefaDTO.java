@@ -6,18 +6,22 @@ import lombok.Data;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.Duration;
 
 @Data
 public class CadastroTarefaDTO {
 
-    @Max(value = 50, message = "{validacao.titulo-max}")
+    @Size(min = 3, max = 50, message = "{validacao.titulo-size}")
+    @NotBlank
     private String titulo;
-    @Max(value = 100, message = "{validacao.descricao-max}")
+    @Size(min = 3, max = 100, message = "{validacao.descricao-size}")
     private String descricao;
+    @NotNull
     private Prioridade prioridade;
     private Duration estimativaEmHoras;
-    @NotBlank
-    private Usuario usuario;
+
+
 
 }
