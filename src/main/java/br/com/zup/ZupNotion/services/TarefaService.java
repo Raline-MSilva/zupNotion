@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 public class TarefaService {
@@ -20,14 +21,11 @@ public class TarefaService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    public Tarefa cadastrarTarefa(Tarefa tarefa){
-        String id = tarefa.getUsuario().getId();
-        if (usuarioRepository.existsById(id)){
-            tarefa.setDataDeCadastro(LocalDateTime.now());
-            tarefa.setStatus(Status.A_FAZER);
-            return tarefaRepository.save(tarefa);
-        }
-        throw new UsuarioNaoExisteException("Usuario não existe");
+    public Tarefa cadastrarTarefa(Tarefa tarefa) {
+        tarefa.setDataDeCadastro(LocalDateTime.now());
+        tarefa.setStatus(Status.A_FAZER);
+
+        return tarefaRepository.save(tarefa);
     }
 
 }
