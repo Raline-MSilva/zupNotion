@@ -45,7 +45,7 @@ public class TarefaControllerTest {
     private RespostaTarefaDTO respostaTarefaDTO;
 
     @BeforeEach
-    public void setup(){
+    public void setup() {
         objectMapper = new ObjectMapper();
 
         tarefa = new Tarefa();
@@ -65,7 +65,7 @@ public class TarefaControllerTest {
 
     @Test
     @WithMockUser("tarefa@tarefa.com")
-    public void testarCadastrarTarefa() throws Exception{
+    public void testarCadastrarTarefa() throws Exception {
         Mockito.when(tarefaService.cadastrarTarefa(Mockito.any(Tarefa.class))).thenReturn(tarefa);
         String json = objectMapper.writeValueAsString(cadastroTarefaDTO);
 
@@ -75,6 +75,18 @@ public class TarefaControllerTest {
 
         String jsonResposta = resultado.andReturn().getResponse().getContentAsString();
         RespostaTarefaDTO respostaTarefaDTO = objectMapper.readValue(jsonResposta, RespostaTarefaDTO.class);
+    }
+
+    @Test
+    @WithMockUser("tarefa@tarefa.com")
+    public void testarCadastrarTarefaValidacaoTituloEmBranco() throws Exception {
+        cadastroTarefaDTO.setTitulo("");
+        Mockito.when((tarefaService.cadastrarTarefa(Mockito.any(Tarefa.class)))).thenReturn(tarefa);
+        String json = objectMapper.writeValueAsString(cadastroTarefaDTO);
+
+        ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.post("/tarefas")
+                        .content(json).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().is(422));
     }
 
 }
