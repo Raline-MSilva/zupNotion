@@ -1,6 +1,6 @@
 package br.com.zup.ZupNotion.services;
 
-import br.com.zup.ZupNotion.exceptions.UsuarioNaoExisteException;
+import br.com.zup.ZupNotion.exceptions.TarefaNaoExisteException;
 import br.com.zup.ZupNotion.models.Tarefa;
 import br.com.zup.ZupNotion.models.Usuario;
 import br.com.zup.ZupNotion.models.enums.Status;
@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
+import java.util.List;
 
 @Service
 public class TarefaService {
@@ -26,6 +26,11 @@ public class TarefaService {
         tarefa.setStatus(Status.A_FAZER);
 
         return tarefaRepository.save(tarefa);
+    }
+
+    public List<Tarefa> buscarTarefas(){
+        Iterable<Tarefa> listaTarefas = tarefaRepository.findAll();
+        return (List<Tarefa>) listaTarefas;
     }
 
 }

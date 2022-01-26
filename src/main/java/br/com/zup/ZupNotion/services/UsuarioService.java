@@ -29,11 +29,4 @@ public class UsuarioService {
         return usuarioRepository.save(usuario);
     }
 
-    public List<Tarefa> buscarTarefas(Usuario usuario){
-        if (usuario.getTarefas() != null) {
-            return usuario.getTarefas();
-        }
-        throw new TarefaNaoExisteException("Tarefas não localizadas");
-    }
-
 }
