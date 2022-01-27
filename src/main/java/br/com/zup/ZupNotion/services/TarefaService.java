@@ -61,4 +61,15 @@ public class TarefaService {
         }
     }
 
+    public void alterarTarefaPorId(Tarefa tarefa, Integer id){
+        Optional<Tarefa> tarefaOptional = tarefaRepository.findById(id);
+        if (tarefaOptional.isPresent()) {
+            tarefa.setTitulo(tarefa.getTitulo());
+            tarefa.setDescricao(tarefa.getDescricao());
+            salvarTarefa(tarefa);
+        } else {
+            throw new TarefaNaoExisteException("Tarefa não existe");
+        }
+    }
+
 }
