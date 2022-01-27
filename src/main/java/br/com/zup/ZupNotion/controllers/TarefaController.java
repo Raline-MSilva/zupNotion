@@ -41,7 +41,7 @@ public class TarefaController {
     public List<TarefaResumoDTO> buscarTarefas(){
         List<TarefaResumoDTO> tarefas = new ArrayList<>();
 
-        for (Tarefa tarefa : tarefaService.buscarTarefas()){
+        for (Tarefa tarefa : tarefaService.buscarTarefas(pegarId())){
             TarefaResumoDTO tarefaResumoDTO = modelMapper.map(tarefa, TarefaResumoDTO.class);
             tarefas.add(tarefaResumoDTO);
         }

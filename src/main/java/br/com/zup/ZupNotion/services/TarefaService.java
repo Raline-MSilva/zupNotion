@@ -39,9 +39,9 @@ public class TarefaService {
         return tarefaRepository.save(tarefa);
     }
 
-    public List<Tarefa> buscarTarefas() {
-        Iterable<Tarefa> listaTarefas = tarefaRepository.findAll();
-        return (List<Tarefa>) listaTarefas;
+    public List<Tarefa> buscarTarefas(String id) {
+        Optional<Usuario> usuario = usuarioRepository.findById(id);
+        return usuario.get().getTarefas();
     }
 
     public Tarefa localizarTarefaPorId(Integer id) {
