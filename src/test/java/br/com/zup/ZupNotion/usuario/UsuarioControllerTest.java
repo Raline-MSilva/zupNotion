@@ -4,9 +4,11 @@ import br.com.zup.ZupNotion.components.Conversor;
 import br.com.zup.ZupNotion.config.security.JWT.JWTComponent;
 import br.com.zup.ZupNotion.config.security.JWT.UsuarioLoginService;
 import br.com.zup.ZupNotion.controllers.UsuarioController;
+import br.com.zup.ZupNotion.models.Tarefa;
 import br.com.zup.ZupNotion.models.Usuario;
 import br.com.zup.ZupNotion.models.dtos.AlterarSenhaDTO;
 import br.com.zup.ZupNotion.models.dtos.CadastroUsuarioDTO;
+import br.com.zup.ZupNotion.models.dtos.RespostaTarefaDTO;
 import br.com.zup.ZupNotion.services.SenhaService;
 import br.com.zup.ZupNotion.services.UsuarioService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -85,6 +88,19 @@ public class UsuarioControllerTest {
 
         ResultActions resultadoEsperado = realizarRequisicao(usuario, 201, "POST", "");
         String jsonResposta = resultadoEsperado.andReturn().getResponse().getContentAsString();
+    }
+
+    @Test
+    @WithMockUser("user@user.com")
+    public void testarCadastroValidacaoUsuarioNomeEmBranco() throws Exception {
+        Mockito.when(usuarioService.cadastrarUsuario(Mockito.any(Usuario.class))).thenReturn(usuario);
+        cadastroUsuarioDTO.setNome("    ");
+        String json = objectMapper.writeValueAsString(cadastroUsuarioDTO);
+
+        ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.post("/usuario")
+                        .contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(MockMvcResultMatchers.status().is(422));
+
     }
 
 }
