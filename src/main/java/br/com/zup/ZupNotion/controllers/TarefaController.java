@@ -3,6 +3,8 @@ package br.com.zup.ZupNotion.controllers;
 import br.com.zup.ZupNotion.config.security.JWT.UsuarioLogado;
 import br.com.zup.ZupNotion.models.Tarefa;
 import br.com.zup.ZupNotion.models.dtos.*;
+import br.com.zup.ZupNotion.models.enums.Prioridade;
+import br.com.zup.ZupNotion.models.enums.Status;
 import br.com.zup.ZupNotion.services.TarefaService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,10 +40,11 @@ public class TarefaController {
     }
 
     @GetMapping
-    public List<TarefaResumoDTO> buscarTarefas(){
+    public List<TarefaResumoDTO> buscarTarefas(@RequestParam(required = false) Status status,
+                                               @RequestParam(required = false)Prioridade prioridade){
         List<TarefaResumoDTO> tarefas = new ArrayList<>();
 
-        for (Tarefa tarefa : tarefaService.buscarTarefas(pegarId())){
+        for (Tarefa tarefa : tarefaService.buscarTarefas(pegarId(), status, prioridade)){
             TarefaResumoDTO tarefaResumoDTO = modelMapper.map(tarefa, TarefaResumoDTO.class);
             tarefas.add(tarefaResumoDTO);
         }
