@@ -25,14 +25,11 @@ public class TarefaService {
 
     public Tarefa cadastrarTarefa(Tarefa tarefa, String id) {
         Optional<Usuario> usuario = usuarioRepository.findById(id);
-        if (usuario.isPresent()) {
-            tarefa.setDataDeCadastro(LocalDateTime.now());
-            tarefa.setStatus(Status.A_FAZER);
-            usuario.get().getTarefas().add(tarefa);
-            tarefa.setUsuario(usuario.get());
-            return salvarTarefa(tarefa);
-        }
-        throw new UsuarioNaoExisteException("Usuario não existe");
+        tarefa.setDataDeCadastro(LocalDateTime.now());
+        tarefa.setStatus(Status.A_FAZER);
+        usuario.get().getTarefas().add(tarefa);
+        tarefa.setUsuario(usuario.get());
+        return salvarTarefa(tarefa);
     }
 
     public Tarefa salvarTarefa(Tarefa tarefa) {
