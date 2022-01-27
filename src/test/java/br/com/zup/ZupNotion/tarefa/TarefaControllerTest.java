@@ -2,6 +2,7 @@ package br.com.zup.ZupNotion.tarefa;
 
 import br.com.zup.ZupNotion.components.Conversor;
 import br.com.zup.ZupNotion.config.security.JWT.JWTComponent;
+import br.com.zup.ZupNotion.config.security.JWT.UsuarioLogado;
 import br.com.zup.ZupNotion.config.security.JWT.UsuarioLoginService;
 import br.com.zup.ZupNotion.controllers.TarefaController;
 import br.com.zup.ZupNotion.models.Tarefa;
@@ -20,6 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -27,6 +30,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.Authenticator;
 import java.net.URI;
 
 @WebMvcTest({TarefaController.class, Conversor.class, UsuarioLoginService.class, JWTComponent.class})
@@ -40,6 +44,7 @@ public class TarefaControllerTest {
 
     @MockBean
     private JWTComponent jwtComponent;
+
 
     @Autowired
     private MockMvc mockMvc;
@@ -86,7 +91,7 @@ public class TarefaControllerTest {
     @Test
     @WithMockUser("tarefa@tarefa.com")
     public void testarCadastrarTarefa() throws Exception {
-        Mockito.when(tarefaService.cadastrarTarefa(Mockito.any(Tarefa.class))).thenReturn(tarefa);
+        Mockito.when(tarefaService.cadastrarTarefa(Mockito.any(Tarefa.class), Mockito.anyString())).thenReturn(tarefa);
         String json = objectMapper.writeValueAsString(cadastroTarefaDTO);
 
         ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.post("/tarefas")
@@ -101,7 +106,7 @@ public class TarefaControllerTest {
     @WithMockUser("tarefa@tarefa.com")
     public void testarCadastrarTarefaValidacaoTituloEmBranco() throws Exception {
         cadastroTarefaDTO.setTitulo("");
-        Mockito.when((tarefaService.cadastrarTarefa(Mockito.any(Tarefa.class)))).thenReturn(tarefa);
+        Mockito.when((tarefaService.cadastrarTarefa(Mockito.any(Tarefa.class), Mockito.anyString()))).thenReturn(tarefa);
         String json = objectMapper.writeValueAsString(cadastroTarefaDTO);
 
         ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.post("/tarefas")
