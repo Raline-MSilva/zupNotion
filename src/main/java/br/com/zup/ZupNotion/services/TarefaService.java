@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,8 +37,17 @@ public class TarefaService {
         return tarefaRepository.save(tarefa);
     }
 
-    public List<Tarefa> buscarTarefas(String id) {
+    public List<Tarefa> buscarTarefas(String id, Status status) {
         Optional<Usuario> usuario = usuarioRepository.findById(id);
+        if (status != null){
+            List<Tarefa> tarefasPorStatus = new ArrayList<>();
+            for (Tarefa tarefa: tarefaRepository.findAllByStatus(status)) {
+                if (tarefa.getUsuario() == usuario.get()){
+                    tarefasPorStatus.add(tarefa);
+                }
+            }
+            return tarefasPorStatus;
+        }
         return usuario.get().getTarefas();
     }
 
