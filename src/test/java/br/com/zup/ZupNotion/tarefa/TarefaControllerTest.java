@@ -109,6 +109,8 @@ public class TarefaControllerTest {
                 .andExpect(MockMvcResultMatchers.status().is(422));
     }
 
+
+
     private ResultActions realizarRequisicao(Object object, int statusEsperado, String httpVerbo, String complemento) throws Exception {
         String json = objectMapper.writeValueAsString(object);
         URI uri = UriComponentsBuilder.fromPath("/tarefas" + "/1").build().toUri();
@@ -126,6 +128,17 @@ public class TarefaControllerTest {
         String json = objectMapper.writeValueAsString(alterarStatusDTO);
 
         ResultActions resultado = realizarRequisicao(tarefa, 200, "PATCH", "");
+        String jsonResposta = resultado.andReturn().getResponse().getContentAsString();
+    }
+
+    @Test
+    @WithMockUser("tarefa@tarefa.com")
+    public void testarAtualizarTarefa() throws Exception {
+        Mockito.when(tarefaService.localizarTarefaPorId(tarefa.getId())).thenReturn(tarefa);
+        Mockito.when(tarefaService.salvarTarefa(Mockito.any(Tarefa.class))).thenReturn(tarefa);
+        String json = objectMapper.writeValueAsString(cadastroTarefaDTO);
+
+        ResultActions resultado = realizarRequisicao(tarefa, 200, "PUT", "");
         String jsonResposta = resultado.andReturn().getResponse().getContentAsString();
     }
 
