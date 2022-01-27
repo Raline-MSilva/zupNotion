@@ -1,9 +1,8 @@
 package br.com.zup.ZupNotion.controllers;
 
 import br.com.zup.ZupNotion.models.Tarefa;
-import br.com.zup.ZupNotion.models.dtos.CadastroTarefaDTO;
-import br.com.zup.ZupNotion.models.dtos.RespostaTarefaDTO;
-import br.com.zup.ZupNotion.models.dtos.TarefaResumoDTO;
+import br.com.zup.ZupNotion.models.dtos.*;
+import br.com.zup.ZupNotion.models.enums.Status;
 import br.com.zup.ZupNotion.services.TarefaService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +39,14 @@ public class TarefaController {
             tarefas.add(tarefaResumoDTO);
         }
         return tarefas;
+    }
+
+    @PatchMapping("/{id}")
+    public void alterarStatusTarefa (@RequestBody @Valid AlterarStatusDTO alterarStatusDTO,
+                                                  @PathVariable Integer id){
+        Tarefa tarefa = tarefaService.localizarTarefaPorId(id);
+        tarefa.setStatus(alterarStatusDTO.getStatus());
+        tarefaService.salvarTarefa(tarefa);
     }
 
 }
