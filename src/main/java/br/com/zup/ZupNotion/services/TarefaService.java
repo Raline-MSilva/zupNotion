@@ -1,7 +1,9 @@
 package br.com.zup.ZupNotion.services;
 
 import br.com.zup.ZupNotion.exceptions.TarefaNaoExisteException;
+import br.com.zup.ZupNotion.exceptions.UsuarioNaoExisteException;
 import br.com.zup.ZupNotion.models.Tarefa;
+import br.com.zup.ZupNotion.models.Usuario;
 import br.com.zup.ZupNotion.models.enums.Status;
 import br.com.zup.ZupNotion.repositories.TarefaRepository;
 import br.com.zup.ZupNotion.repositories.UsuarioRepository;
@@ -21,11 +23,16 @@ public class TarefaService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    public Tarefa cadastrarTarefa(Tarefa tarefa) {
-        tarefa.setDataDeCadastro(LocalDateTime.now());
-        tarefa.setStatus(Status.A_FAZER);
-
-        return salvarTarefa(tarefa);
+    public Tarefa cadastrarTarefa(Tarefa tarefa, String id) {
+        Optional<Usuario> usuario = usuarioRepository.findById(id);
+        if (usuario.isPresent()) {
+            tarefa.setDataDeCadastro(LocalDateTime.now());
+            tarefa.setStatus(Status.A_FAZER);
+            usuario.get().getTarefas().add(tarefa);
+            tarefa.setUsuario(usuario.get());
+            return salvarTarefa(tarefa);
+        }
+        throw new UsuarioNaoExisteException("Usuario não existe");
     }
 
     public Tarefa salvarTarefa(Tarefa tarefa) {

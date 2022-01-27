@@ -1,5 +1,6 @@
 package br.com.zup.ZupNotion.controllers;
 
+import br.com.zup.ZupNotion.config.security.JWT.UsuarioLogado;
 import br.com.zup.ZupNotion.models.Tarefa;
 import br.com.zup.ZupNotion.models.dtos.*;
 import br.com.zup.ZupNotion.models.enums.Status;
@@ -7,6 +8,7 @@ import br.com.zup.ZupNotion.services.TarefaService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -25,9 +27,11 @@ public class TarefaController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public RespostaTarefaDTO cadastrar (@RequestBody @Valid CadastroTarefaDTO cadastroTarefaDTO) {
+    public RespostaTarefaDTO cadastrar (@RequestBody @Valid CadastroTarefaDTO cadastroTarefaDTO,
+                                        Authentication authentication) {
+        UsuarioLogado usuarioLogado = (UsuarioLogado) authentication.getPrincipal();
         Tarefa tarefa = modelMapper.map(cadastroTarefaDTO, Tarefa.class);
-        return modelMapper.map(tarefaService.cadastrarTarefa(tarefa), RespostaTarefaDTO.class);
+        return modelMapper.map(tarefaService.cadastrarTarefa(tarefa, usuarioLogado.getId()), RespostaTarefaDTO.class);
     }
 
     @GetMapping
