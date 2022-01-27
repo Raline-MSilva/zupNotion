@@ -2,6 +2,7 @@ package br.com.zup.ZupNotion.config;
 
 import br.com.zup.ZupNotion.exceptions.*;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -50,6 +51,12 @@ public class ControllerAdvice {
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     public MensagemDeErro tratarTarefaNaoExisteException(TarefaNaoExisteException exception){
         return new MensagemDeErro(exception.getMessage());
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public MensagemDeErro ExcecaoDeEnumInvalido(HttpMessageNotReadableException exception) {
+        return new MensagemDeErro("Opção inválida");
     }
 
 }
