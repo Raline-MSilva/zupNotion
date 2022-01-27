@@ -116,4 +116,17 @@ public class UsuarioControllerTest {
 
     }
 
+    @Test
+    @WithMockUser("user@user.com")
+    public void testarCadastroValidacaoUsuarioSenhaEmBranco() throws Exception {
+        Mockito.when(usuarioService.cadastrarUsuario(Mockito.any(Usuario.class))).thenReturn(usuario);
+        cadastroUsuarioDTO.setSenha("  ");
+        String json = objectMapper.writeValueAsString(cadastroUsuarioDTO);
+
+        ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.post("/usuario")
+                        .contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(MockMvcResultMatchers.status().is(422));
+
+    }
+
 }
