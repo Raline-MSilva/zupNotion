@@ -49,4 +49,10 @@ public class TarefaController {
         tarefaService.salvarTarefa(tarefa);
     }
 
+    @DeleteMapping("/{id}")
+    public void deletarTarefa (@PathVariable Integer id){
+        tarefaService.deletarTarefa(id);
+    }
+
+
 }

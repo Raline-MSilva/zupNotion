@@ -45,4 +45,13 @@ public class TarefaService {
         throw new TarefaNaoExisteException("Tarefa não existe");
     }
 
+    public void deletarTarefa(Integer id) {
+        Optional<Tarefa> tarefaOptional = tarefaRepository.findById(id);
+        if (tarefaOptional.isPresent()) {
+            tarefaRepository.deleteById(id);
+        } else {
+            throw new TarefaNaoExisteException("Tarefa não existe");
+        }
+    }
+
 }
