@@ -55,8 +55,8 @@ public class ControllerAdvice {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public MensagemDeErro ExcecaoDeEnumInvalido(HttpMessageNotReadableException exception) {
-        return new MensagemDeErro("Opção inválida");
+    public MensagemDeErro ExcecaoDeEnumStatusInvalido(HttpMessageNotReadableException exception) {
+        return new MensagemDeErro("Status inválido");
     }
 
 }

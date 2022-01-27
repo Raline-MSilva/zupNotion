@@ -64,11 +64,13 @@ public class TarefaController {
         tarefaService.deletarTarefa(id);
     }
 
-    @PutMapping("{id}")
+    @PutMapping("/{id}")
     public void alterarTarefaPorId (@RequestBody @Valid CadastroTarefaDTO cadastroTarefaDTO,
                                     @PathVariable Integer id){
-        Tarefa tarefa = modelMapper.map(cadastroTarefaDTO, Tarefa.class);
-        tarefaService.alterarTarefaPorId(tarefa, id);
+        Tarefa tarefa = tarefaService.localizarTarefaPorId(id);
+        tarefa.setTitulo(cadastroTarefaDTO.getTitulo());
+        tarefa.setDescricao(cadastroTarefaDTO.getDescricao());
+        tarefaService.salvarTarefa(tarefa);
     }
 
 }
