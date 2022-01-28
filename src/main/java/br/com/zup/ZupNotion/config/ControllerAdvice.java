@@ -48,7 +48,7 @@ public class ControllerAdvice {
     }
 
     @ExceptionHandler(TarefaNaoExisteException.class)
-    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public MensagemDeErro tratarTarefaNaoExisteException(TarefaNaoExisteException exception){
         return new MensagemDeErro(exception.getMessage());
     }

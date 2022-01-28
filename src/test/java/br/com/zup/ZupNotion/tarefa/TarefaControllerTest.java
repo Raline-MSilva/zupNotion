@@ -4,6 +4,7 @@ import br.com.zup.ZupNotion.components.Conversor;
 import br.com.zup.ZupNotion.config.security.JWT.JWTComponent;
 import br.com.zup.ZupNotion.config.security.JWT.UsuarioLoginService;
 import br.com.zup.ZupNotion.controllers.TarefaController;
+import br.com.zup.ZupNotion.exceptions.TarefaNaoExisteException;
 import br.com.zup.ZupNotion.models.Tarefa;
 import br.com.zup.ZupNotion.models.Usuario;
 import br.com.zup.ZupNotion.models.dtos.AlterarStatusDTO;
@@ -117,7 +118,19 @@ public class TarefaControllerTest {
                 .andExpect(MockMvcResultMatchers.status().is(422));
     }
 
+    @Test
+    @WithMockUser("tarefa@tarefa.com")
+    public void testarCadastrarTarefaValidacaoPrioridadeNulo() throws Exception {
+        cadastroTarefaDTO.setPrioridade(null);
+        Mockito.when(tarefaService.cadastrarTarefa(Mockito.any(Tarefa.class), Mockito.anyString())).thenReturn(tarefa);
 
+        Mockito.when(usuarioLogadoService.pegarId()).thenReturn("id");
+        String json = objectMapper.writeValueAsString(cadastroTarefaDTO);
+
+        ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.post("/tarefas")
+                        .content(json).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().is(422));
+    }
 
     private ResultActions realizarRequisicao(Object object, int statusEsperado, String httpVerbo, String complemento) throws Exception {
         String json = objectMapper.writeValueAsString(object);
@@ -162,5 +175,14 @@ public class TarefaControllerTest {
         String jsonResposta = resultado.andReturn().getResponse().getContentAsString();
     }
 
+    @Test
+    @WithMockUser("tarefa@tarefa.com")
+    public void testarDeletarTarefaNaoExistente() throws Exception {
+        Mockito.doThrow(TarefaNaoExisteException.class).when(tarefaService).deletarTarefa(Mockito.any());
+
+        ResultActions resultado = realizarRequisicao(tarefa, 404, "DELETE", "");
+        String jsonResposta = resultado.andReturn().getResponse().getContentAsString();
+
+    }
 
 }
