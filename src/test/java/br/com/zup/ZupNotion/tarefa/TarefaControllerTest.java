@@ -151,4 +151,16 @@ public class TarefaControllerTest {
     }
 
 
+    @Test
+    @WithMockUser("tarefa@tarefa.com")
+    public void testarDeletarTarefa() throws Exception {
+        Mockito.when(tarefaService.localizarTarefaPorId(tarefa.getId())).thenReturn(tarefa);
+        Mockito.when(tarefaService.salvarTarefa(Mockito.any(Tarefa.class))).thenReturn(tarefa);
+        String json = objectMapper.writeValueAsString(cadastroTarefaDTO);
+
+        ResultActions resultado = realizarRequisicao(tarefa, 200, "DELETE", "");
+        String jsonResposta = resultado.andReturn().getResponse().getContentAsString();
+    }
+
+
 }
