@@ -4,6 +4,7 @@ import br.com.zup.ZupNotion.components.Conversor;
 import br.com.zup.ZupNotion.config.security.JWT.JWTComponent;
 import br.com.zup.ZupNotion.config.security.JWT.UsuarioLoginService;
 import br.com.zup.ZupNotion.controllers.TarefaController;
+import br.com.zup.ZupNotion.exceptions.TarefaNaoExisteException;
 import br.com.zup.ZupNotion.models.Tarefa;
 import br.com.zup.ZupNotion.models.Usuario;
 import br.com.zup.ZupNotion.models.dtos.AlterarStatusDTO;
@@ -172,6 +173,16 @@ public class TarefaControllerTest {
 
         ResultActions resultado = realizarRequisicao(tarefa, 200, "DELETE", "");
         String jsonResposta = resultado.andReturn().getResponse().getContentAsString();
+    }
+
+    @Test
+    @WithMockUser("tarefa@tarefa.com")
+    public void testarDeletarTarefaNaoExistente() throws Exception {
+        Mockito.doThrow(TarefaNaoExisteException.class).when(tarefaService).deletarTarefa(Mockito.any());
+
+        ResultActions resultado = realizarRequisicao(tarefa, 404, "DELETE", "");
+        String jsonResposta = resultado.andReturn().getResponse().getContentAsString();
+
     }
 
 }
