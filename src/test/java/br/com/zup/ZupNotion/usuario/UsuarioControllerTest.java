@@ -129,4 +129,14 @@ public class UsuarioControllerTest {
 
     }
 
+    @Test
+    @WithMockUser("user@user.com")
+    public void testarAlterarSenha() throws Exception {
+        Mockito.when(senhaService.alterarSenha(Mockito.any(Usuario.class))).thenReturn(usuario);
+        String json = objectMapper.writeValueAsString(alterarSenhaDTO);
+
+        ResultActions resultado = realizarRequisicao(usuario, 200, "PATCH", "/esqueciSenha");
+        String jsonResposta = resultado.andReturn().getResponse().getContentAsString();
+    }
+
 }
