@@ -40,23 +40,23 @@ public class TarefaService {
     public List<Tarefa> buscarTarefas(String id, Status status, Prioridade prioridade) {
         Optional<Usuario> usuario = usuarioRepository.findById(id);
 
-        if (status != null){
+        if (status != null) {
             List<Tarefa> tarefasPorStatus = new ArrayList<>();
 
             for (Tarefa tarefa : tarefaRepository.findAllByStatus(status)) {
 
-                if (tarefa.getUsuario() == usuario.get()){
+                if (tarefa.getUsuario() == usuario.get()) {
                     tarefasPorStatus.add(tarefa);
                 }
             }
 
             return tarefasPorStatus;
         }
-        if (prioridade != null){
+        if (prioridade != null) {
             List<Tarefa> tarefasPorPrioridade = new ArrayList<>();
 
             for (Tarefa tarefa : tarefaRepository.findAllByPrioridade(prioridade)) {
-                if (tarefa.getUsuario() == usuario.get()){
+                if (tarefa.getUsuario() == usuario.get()) {
                     tarefasPorPrioridade.add(tarefa);
                 }
             }
@@ -76,12 +76,8 @@ public class TarefaService {
     }
 
     public void deletarTarefa(Integer id) {
-        Optional<Tarefa> tarefaOptional = tarefaRepository.findById(id);
-        if (tarefaOptional.isPresent()) {
-            tarefaRepository.deleteById(id);
-        } else {
-            throw new TarefaNaoExisteException("Tarefa não existe");
-        }
+        localizarTarefaPorId(id);
+        tarefaRepository.deleteById(id);
     }
 
 }
