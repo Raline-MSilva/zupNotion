@@ -30,7 +30,7 @@ public class UsuarioController {
         usuarioService.cadastrarUsuario(usuario);
     }
 
-    @PutMapping("/esqueciSenha")
+    @PatchMapping("/esqueciSenha")
     @ResponseStatus(HttpStatus.OK)
     public void alterarSenha(@RequestBody @Valid AlterarSenhaDTO alterarSenhaDTO) {
         senhaService.alterarSenha(modelMapper.map(alterarSenhaDTO, Usuario.class));
