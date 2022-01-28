@@ -34,7 +34,8 @@ public class ConfiguracoesDeSeguranca extends WebSecurityConfigurerAdapter {
         http.cors().configurationSource(configurarCORS());
 
 
-        http.authorizeRequests().antMatchers(HttpMethod.POST, "/usuario").permitAll().anyRequest()
+        http.authorizeRequests().antMatchers(HttpMethod.POST, "/usuario").permitAll()
+                .antMatchers(HttpMethod.PATCH, "/usuario/esqueciSenha").permitAll().anyRequest()
                 .authenticated();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
