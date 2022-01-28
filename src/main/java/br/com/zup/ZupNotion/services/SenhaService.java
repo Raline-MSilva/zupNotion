@@ -19,14 +19,14 @@ public class SenhaService {
     @Autowired
     private BCryptPasswordEncoder encoder;
 
-    public void alterarSenha(Usuario usuario) {
+    public Usuario alterarSenha(Usuario usuario) {
         Optional<Usuario> usuarioOptional = usuarioRepository.findByEmail(usuario.getEmail());
 
         if (usuarioOptional.isPresent()) {
             Usuario usuarioBanco = usuarioOptional.get();
             usuarioBanco.setSenha(usuario.getSenha());
             criptografarSenha(usuarioBanco);
-            usuarioRepository.save(usuarioBanco);
+            return usuarioRepository.save(usuarioBanco);
         }
         else {
             throw new UsuarioNaoExisteException("Usuário não existe");
