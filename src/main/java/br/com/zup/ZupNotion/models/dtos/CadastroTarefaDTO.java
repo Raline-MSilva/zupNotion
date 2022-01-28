@@ -8,6 +8,7 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.sql.Time;
 import java.time.Duration;
 
 @Data
@@ -20,7 +21,7 @@ public class CadastroTarefaDTO {
     private String descricao;
     @NotNull
     private Prioridade prioridade;
-    private Duration estimativaEmHoras;
+    private Time estimativaEmHoras;
 
 
 
