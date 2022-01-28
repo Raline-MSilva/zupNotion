@@ -117,7 +117,19 @@ public class TarefaControllerTest {
                 .andExpect(MockMvcResultMatchers.status().is(422));
     }
 
+    @Test
+    @WithMockUser("tarefa@tarefa.com")
+    public void testarCadastrarTarefaValidacaoPrioridadeNulo() throws Exception {
+        cadastroTarefaDTO.setPrioridade(null);
+        Mockito.when(tarefaService.cadastrarTarefa(Mockito.any(Tarefa.class), Mockito.anyString())).thenReturn(tarefa);
 
+        Mockito.when(usuarioLogadoService.pegarId()).thenReturn("id");
+        String json = objectMapper.writeValueAsString(cadastroTarefaDTO);
+
+        ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.post("/tarefas")
+                        .content(json).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().is(422));
+    }
 
     private ResultActions realizarRequisicao(Object object, int statusEsperado, String httpVerbo, String complemento) throws Exception {
         String json = objectMapper.writeValueAsString(object);
@@ -161,6 +173,5 @@ public class TarefaControllerTest {
         ResultActions resultado = realizarRequisicao(tarefa, 200, "DELETE", "");
         String jsonResposta = resultado.andReturn().getResponse().getContentAsString();
     }
-
 
 }
