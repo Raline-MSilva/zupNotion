@@ -22,14 +22,15 @@ public class SenhaService {
     public void alterarSenha(Usuario usuario) {
         Optional<Usuario> usuarioOptional = usuarioRepository.findByEmail(usuario.getEmail());
 
-        if (usuarioOptional.isEmpty()) {
+        if (usuarioOptional.isPresent()) {
+            Usuario usuarioBanco = usuarioOptional.get();
+            usuarioBanco.setSenha(usuario.getSenha());
+            criptografarSenha(usuarioBanco);
+            usuarioRepository.save(usuarioBanco);
+        }
+        else {
             throw new UsuarioNaoExisteException("Usuário não existe");
         }
-
-        Usuario usuarioBanco = usuarioOptional.get();
-        usuarioBanco.setSenha(usuario.getSenha());
-
-        usuarioRepository.save(usuarioBanco);
     }
 
     public void criptografarSenha(Usuario usuario){
