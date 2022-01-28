@@ -54,4 +54,40 @@ public class TarefaServiceTest {
         });
     }
 
+    @Test
+    public void testarBuscarTarefa(){
+        Mockito.when(tarefaRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(tarefa));
+        Tarefa tarefaResposta = tarefaService.localizarTarefaPorId(Mockito.anyInt());
+
+        Assertions.assertNotNull(tarefaResposta);
+        Assertions.assertEquals(Tarefa.class,tarefaResposta.getClass());
+        Assertions.assertEquals(tarefa.getId(),tarefaResposta.getId());
+
+        Mockito.verify(tarefaRepository, Mockito.times(1)).findById(Mockito.anyInt());
+    }
+
+    @Test
+    public void testarBuscarTarefaNaoEncontrado(){
+        Mockito.when(tarefaRepository.save(Mockito.any())).thenReturn(tarefa);
+        Mockito.when(tarefaRepository.findById(Mockito.anyInt())).thenReturn(Optional.empty());
+
+        TarefaNaoExisteException exception = Assertions.assertThrows(TarefaNaoExisteException.class, () ->{
+            tarefaService.localizarTarefaPorId(0);
+        });
+
+        Assertions.assertEquals("Tarefa não existe", exception.getMessage());
+
+    }
+
+    @Test
+    public void testarSalvarTarefa() {
+        Mockito.when(tarefaRepository.save(tarefa))
+                .thenAnswer(objto -> objto.getArgument(0, Tarefa.class));
+
+        tarefaService.salvarTarefa(tarefa);
+
+        Mockito.verify(tarefaRepository, Mockito.times(1)).save(tarefa);
+
+    }
+
 }
