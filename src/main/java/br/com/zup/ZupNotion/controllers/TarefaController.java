@@ -1,17 +1,28 @@
 package br.com.zup.ZupNotion.controllers;
 
-import br.com.zup.ZupNotion.config.security.JWT.UsuarioLogado;
 import br.com.zup.ZupNotion.models.Tarefa;
-import br.com.zup.ZupNotion.models.dtos.*;
+import br.com.zup.ZupNotion.models.dtos.AlterarStatusDTO;
+import br.com.zup.ZupNotion.models.dtos.CadastroTarefaDTO;
+import br.com.zup.ZupNotion.models.dtos.RespostaTarefaDTO;
+import br.com.zup.ZupNotion.models.dtos.TarefaResumoDTO;
 import br.com.zup.ZupNotion.models.enums.Prioridade;
 import br.com.zup.ZupNotion.models.enums.Status;
 import br.com.zup.ZupNotion.services.TarefaService;
+import br.com.zup.ZupNotion.services.UsuarioLogadoService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -26,17 +37,14 @@ public class TarefaController {
     @Autowired
     private ModelMapper modelMapper;
 
-    public String pegarId() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        UsuarioLogado usuarioLogado = (UsuarioLogado) principal;
-        return usuarioLogado.getId();
-    }
+    @Autowired
+    private UsuarioLogadoService usuarioLogadoService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public RespostaTarefaDTO cadastrar (@RequestBody @Valid CadastroTarefaDTO cadastroTarefaDTO) {
         Tarefa tarefa = modelMapper.map(cadastroTarefaDTO, Tarefa.class);
-        return modelMapper.map(tarefaService.cadastrarTarefa(tarefa, pegarId()), RespostaTarefaDTO.class);
+        return modelMapper.map(tarefaService.cadastrarTarefa(tarefa, usuarioLogadoService.pegarId()), RespostaTarefaDTO.class);
     }
 
     @GetMapping
@@ -44,7 +52,7 @@ public class TarefaController {
                                                @RequestParam(required = false)Prioridade prioridade){
         List<TarefaResumoDTO> tarefas = new ArrayList<>();
 
-        for (Tarefa tarefa : tarefaService.buscarTarefas(pegarId(), status, prioridade)){
+        for (Tarefa tarefa : tarefaService.buscarTarefas(usuarioLogadoService.pegarId(), status, prioridade)){
             TarefaResumoDTO tarefaResumoDTO = modelMapper.map(tarefa, TarefaResumoDTO.class);
             tarefas.add(tarefaResumoDTO);
         }
