@@ -3,7 +3,6 @@ package br.com.zup.ZupNotion.services;
 import br.com.zup.ZupNotion.exceptions.TarefaNaoExisteException;
 import br.com.zup.ZupNotion.models.Tarefa;
 import br.com.zup.ZupNotion.models.enums.Prioridade;
-import br.com.zup.ZupNotion.models.enums.Status;
 import br.com.zup.ZupNotion.repositories.TarefaRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,7 +52,6 @@ public class TarefaServiceTest {
         TarefaNaoExisteException exception = Assertions.assertThrows(TarefaNaoExisteException.class, () -> {
             tarefaService.deletarTarefa(1);
         });
-
     }
 
 }
