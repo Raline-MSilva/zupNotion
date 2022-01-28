@@ -79,4 +79,15 @@ public class TarefaServiceTest {
 
     }
 
+    @Test
+    public void testarSalvarTarefa() {
+        Mockito.when(tarefaRepository.save(tarefa))
+                .thenAnswer(objto -> objto.getArgument(0, Tarefa.class));
+
+        tarefaService.salvarTarefa(tarefa);
+
+        Mockito.verify(tarefaRepository, Mockito.times(1)).save(tarefa);
+
+    }
+
 }
