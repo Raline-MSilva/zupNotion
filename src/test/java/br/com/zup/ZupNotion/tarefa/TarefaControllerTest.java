@@ -10,10 +10,12 @@ import br.com.zup.ZupNotion.models.Usuario;
 import br.com.zup.ZupNotion.models.dtos.AlterarStatusDTO;
 import br.com.zup.ZupNotion.models.dtos.CadastroTarefaDTO;
 import br.com.zup.ZupNotion.models.dtos.RespostaTarefaDTO;
+import br.com.zup.ZupNotion.models.dtos.TarefaResumoDTO;
 import br.com.zup.ZupNotion.models.enums.Prioridade;
 import br.com.zup.ZupNotion.models.enums.Status;
 import br.com.zup.ZupNotion.services.TarefaService;
 import br.com.zup.ZupNotion.services.UsuarioLogadoService;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,6 +32,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.Arrays;
+import java.util.List;
 
 @WebMvcTest({TarefaController.class, Conversor.class, UsuarioLoginService.class, JWTComponent.class})
 
@@ -182,6 +186,20 @@ public class TarefaControllerTest {
 
         ResultActions resultado = realizarRequisicao(tarefa, 404, "DELETE", "");
         String jsonResposta = resultado.andReturn().getResponse().getContentAsString();
+
+    }
+    @Test
+    @WithMockUser("tarefa@tarefa.com")
+    public void testarBuscarTarefasPorStatus() throws Exception {
+        Mockito.when(tarefaService.buscarTarefas(usuario.getId(), tarefa.getStatus(), tarefa.getPrioridade())).thenReturn(Arrays.asList(tarefa));
+        ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.get("/tarefas?status=CONCLUIDA")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().is(200))
+                .andExpect(MockMvcResultMatchers.jsonPath("$").isArray());
+
+        String jsonResposta = resultado.andReturn().getResponse().getContentAsString();
+        List<TarefaResumoDTO> tarefas = objectMapper.readValue(jsonResposta, new TypeReference<List<TarefaResumoDTO>>() {
+        });
 
     }
 
