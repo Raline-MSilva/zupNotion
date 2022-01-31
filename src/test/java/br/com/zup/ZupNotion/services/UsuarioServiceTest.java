@@ -22,6 +22,9 @@ public class UsuarioServiceTest {
     @MockBean
     private SenhaService senhaService;
 
+    @MockBean
+    private SegurancaService segurancaService;
+
     @Autowired
     private UsuarioService usuarioService;
 
@@ -38,11 +41,11 @@ public class UsuarioServiceTest {
     @Test
     public void testarCadastrarUsuario(){
         usuarioService.cadastrarUsuario(usuario);
-        InOrder inOrder = Mockito.inOrder(emailService, emailService, senhaService);
+        InOrder inOrder = Mockito.inOrder(emailService, emailService, segurancaService);
 
         inOrder.verify(emailService, Mockito.times(1)).verificarEmailExistente(usuario.getEmail());
         inOrder.verify(emailService, Mockito.times(1)).validarEmailZup(usuario.getEmail());
-        inOrder.verify(senhaService, Mockito.times(1)).criptografarSenha(usuario);
+        inOrder.verify(segurancaService, Mockito.times(1)).criptografarSenha(usuario.getSenha());
     }
 
 }
