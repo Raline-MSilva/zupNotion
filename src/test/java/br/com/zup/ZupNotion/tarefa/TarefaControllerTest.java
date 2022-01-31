@@ -203,4 +203,19 @@ public class TarefaControllerTest {
 
     }
 
+    @Test
+    @WithMockUser("tarefa@tarefa.com")
+    public void testarBuscarTarefasPorPrioridade() throws Exception {
+        Mockito.when(tarefaService.buscarTarefas(usuario.getId(), tarefa.getStatus(), tarefa.getPrioridade())).thenReturn(Arrays.asList(tarefa));
+        ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.get("/tarefas?prioridade=ALTA")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().is(200))
+                .andExpect(MockMvcResultMatchers.jsonPath("$").isArray());
+
+        String jsonResposta = resultado.andReturn().getResponse().getContentAsString();
+        List<TarefaResumoDTO> tarefas = objectMapper.readValue(jsonResposta, new TypeReference<List<TarefaResumoDTO>>() {
+        });
+
+    }
+
 }
