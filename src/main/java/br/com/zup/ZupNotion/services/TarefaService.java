@@ -8,7 +8,10 @@ import br.com.zup.ZupNotion.models.enums.Status;
 import br.com.zup.ZupNotion.repositories.TarefaRepository;
 import br.com.zup.ZupNotion.repositories.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -38,12 +41,13 @@ public class TarefaService {
     }
 
     public List<Tarefa> buscarTarefas(String id, Status status, Prioridade prioridade) {
+        Pageable paginacaoTarefas = PageRequest.of(0, 2);
         Optional<Usuario> usuario = usuarioRepository.findById(id);
 
         if (status != null) {
             List<Tarefa> tarefasPorStatus = new ArrayList<>();
 
-            for (Tarefa tarefa : tarefaRepository.findAllByStatus(status)) {
+            for (Tarefa tarefa : tarefaRepository.findAllByStatus(status, paginacaoTarefas)) {
 
                 if (tarefa.getUsuario() == usuario.get()) {
                     tarefasPorStatus.add(tarefa);
