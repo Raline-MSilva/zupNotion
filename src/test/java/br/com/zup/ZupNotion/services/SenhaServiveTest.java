@@ -21,7 +21,9 @@ public class SenhaServiveTest {
     @MockBean
     private UsuarioRepository usuarioRepository;
     @MockBean
-    private BCryptPasswordEncoder encoder;
+    private SegurancaService segurancaService;
+    @MockBean
+    private EmailService emailService;
 
     @Autowired
     private SenhaService senhaService;
@@ -39,7 +41,7 @@ public class SenhaServiveTest {
     @Test
     public void testarLocalizarPorEmail(){
         Mockito.when(usuarioRepository.findByEmail(Mockito.anyString())).thenReturn(Optional.of(usuario));
-        Usuario usuarioResposta = senhaService.localizarPorEmail(usuario.getEmail());
+        Usuario usuarioResposta = emailService.localizarPorEmail(usuario.getEmail());
 
         Assertions.assertNotNull(usuarioResposta);
         Assertions.assertEquals(Usuario.class,usuarioResposta.getClass());
@@ -48,5 +50,15 @@ public class SenhaServiveTest {
         Mockito.verify(usuarioRepository, Mockito.times(1)).findByEmail(Mockito.anyString());
     }
 
-
+    @Test
+    public void testarAlterarSenha() {
+        String senhaCriptografada = "vgcsdhjd";
+        Mockito.when(emailService.localizarPorEmail(usuario.getEmail())).thenReturn(usuario);
+        Mockito.when(segurancaService.criptografarSenha(usuario.getSenha())).thenReturn(senhaCriptografada);
+        Usuario usuarioCadastrado = usuario;
+        usuarioCadastrado.setSenha(senhaCriptografada);
+        Mockito.when(usuarioRepository.save(usuarioCadastrado)).thenReturn(usuarioCadastrado);
+        Usuario usuarioRetornado = senhaService.alterarSenha(usuario);
+        Assertions.assertEquals(usuarioRetornado, usuarioCadastrado);
+    }
 }
