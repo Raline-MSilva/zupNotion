@@ -21,7 +21,7 @@ public class Usuario {
     private String nome;
     @Column(nullable = false)
     private String senha;
-    @OneToMany
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     private List<Tarefa> tarefas;
 
 }

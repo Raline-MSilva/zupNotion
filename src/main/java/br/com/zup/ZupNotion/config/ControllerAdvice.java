@@ -55,8 +55,14 @@ public class ControllerAdvice {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public MensagemDeErro ExcecaoDeEnumStatusInvalido(HttpMessageNotReadableException exception) {
-        return new MensagemDeErro("Status inválido");
+    public MensagemDeErro manipularExcecaoDeEnumInvalido(HttpMessageNotReadableException exception){
+        if(exception.getLocalizedMessage().contains("br.com.zup.ZupNotion.models.enums.Prioridade")){
+            return new MensagemDeErro("Prioridade deve ser BAIXA, MEDIA ou ALTA");
+        }
+        if(exception.getLocalizedMessage().contains("br.com.zup.ZupNotion.models.enums.Status")){
+            return new MensagemDeErro("Status deve ser A_FAZER, EM_ANDAMENTO ou CONCLUIDA");
+        }
+        return new MensagemDeErro(exception.getLocalizedMessage());
     }
 
 }

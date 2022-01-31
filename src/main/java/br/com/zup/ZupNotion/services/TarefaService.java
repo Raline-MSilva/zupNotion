@@ -70,14 +70,21 @@ public class TarefaService {
     public Tarefa localizarTarefaPorId(Integer id) {
         Optional<Tarefa> tarefaOptional = tarefaRepository.findById(id);
         if (tarefaOptional.isPresent()) {
-            return tarefaOptional.get();
+            return (Tarefa) tarefaOptional.get();
         }
         throw new TarefaNaoExisteException("Tarefa não existe");
     }
 
-    public void deletarTarefa(Integer id) {
-        localizarTarefaPorId(id);
-        tarefaRepository.deleteById(id);
+    public void deletarTarefa(Integer tarefaId, String usuarioId) {
+        try {
+            Tarefa tarefa = localizarTarefaPorId(tarefaId);
+            Optional<Usuario> usuario = usuarioRepository.findById(usuarioId);
+            usuario.get().getTarefas().remove(tarefa);
+            tarefaRepository.deleteById(tarefaId);
+        }
+        catch (TarefaNaoExisteException exception){
+            throw new TarefaNaoExisteException("Tarefa não existe");
+        }
     }
 
 }

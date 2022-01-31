@@ -30,8 +30,8 @@ public class Tarefa {
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime dataDeCadastro;
     @Column(name = "estimativa_em_horas")
-    private Duration estimativaEmHoras;
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
+    private int estimativaEmHoras;
+    @ManyToOne
     private Usuario usuario;
 
 }

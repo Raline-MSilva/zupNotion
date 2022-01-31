@@ -1,9 +1,8 @@
 package br.com.zup.ZupNotion.models.dtos;
 
 import br.com.zup.ZupNotion.models.enums.Prioridade;
+import br.com.zup.ZupNotion.models.enums.Status;
 import lombok.Data;
-
-import java.time.Duration;
 
 @Data
 public class TarefaResumoDTO {
@@ -11,6 +10,7 @@ public class TarefaResumoDTO {
     private String titulo;
     private String descricao;
     private Prioridade prioridade;
-    private Duration estimativaEmHoras;
+    private Status status;
+    private int estimativaEmHoras;
 
 }

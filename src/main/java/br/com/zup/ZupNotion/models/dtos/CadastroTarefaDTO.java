@@ -21,7 +21,7 @@ public class CadastroTarefaDTO {
     private String descricao;
     @NotNull
     private Prioridade prioridade;
-    private Time estimativaEmHoras;
+    private int estimativaEmHoras;
 
 
 
