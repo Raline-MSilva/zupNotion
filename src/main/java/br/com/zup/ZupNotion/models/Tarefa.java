@@ -31,7 +31,7 @@ public class Tarefa {
     private LocalDateTime dataDeCadastro;
     @Column(name = "estimativa_em_horas")
     private int estimativaEmHoras;
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
+    @ManyToOne
     private Usuario usuario;
 
 }
