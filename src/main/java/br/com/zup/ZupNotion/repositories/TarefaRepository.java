@@ -11,6 +11,7 @@ import java.util.List;
 
 public interface TarefaRepository extends PagingAndSortingRepository<Tarefa, Integer> {
 
+    List<Tarefa> findAll();
     List<Tarefa> findAllByStatus(Status status, Pageable pageable);
     List<Tarefa> findAllByPrioridade(Prioridade prioridade);
 
