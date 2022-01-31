@@ -8,8 +8,10 @@ import br.com.zup.ZupNotion.models.enums.Status;
 import br.com.zup.ZupNotion.repositories.TarefaRepository;
 import br.com.zup.ZupNotion.repositories.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 
@@ -89,6 +91,11 @@ public class TarefaService {
         catch (TarefaNaoExisteException exception){
             throw new TarefaNaoExisteException("Tarefa não existe");
         }
+    }
+
+    public Page<Tarefa> findPage(Integer page, Integer linesPerPage, String orderBy, String direction){
+        PageRequest pageRequest = PageRequest.of(page, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
+        return tarefaRepository.findAll(pageRequest);
     }
 
 }
