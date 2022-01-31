@@ -188,6 +188,22 @@ public class TarefaControllerTest {
         String jsonResposta = resultado.andReturn().getResponse().getContentAsString();
 
     }
+
+    @Test
+    @WithMockUser("tarefa@tarefa.com")
+    public void testarBuscarTarefas() throws Exception {
+        Mockito.when(tarefaService.buscarTarefas(usuario.getId(), tarefa.getStatus(), tarefa.getPrioridade())).thenReturn(Arrays.asList(tarefa));
+        ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.get("/tarefas")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().is(200))
+                .andExpect(MockMvcResultMatchers.jsonPath("$").isArray());
+
+        String jsonResposta = resultado.andReturn().getResponse().getContentAsString();
+        List<TarefaResumoDTO> tarefas = objectMapper.readValue(jsonResposta, new TypeReference<List<TarefaResumoDTO>>() {
+        });
+
+    }
+
     @Test
     @WithMockUser("tarefa@tarefa.com")
     public void testarBuscarTarefasPorStatus() throws Exception {
