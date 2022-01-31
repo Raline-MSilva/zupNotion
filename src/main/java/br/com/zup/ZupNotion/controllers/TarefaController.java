@@ -69,7 +69,7 @@ public class TarefaController {
 
     @DeleteMapping("/{id}")
     public void deletarTarefa (@PathVariable Integer id){
-        tarefaService.deletarTarefa(id);
+        tarefaService.deletarTarefa(id, usuarioLogadoService.pegarId());
     }
 
     @PutMapping("/{id}")
