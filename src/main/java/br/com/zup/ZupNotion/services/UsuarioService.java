@@ -22,10 +22,13 @@ public class UsuarioService {
     @Autowired
     private SenhaService senhaService;
 
+    @Autowired
+    private SegurancaService segurancaService;
+
     public Usuario cadastrarUsuario(Usuario usuario) {
         emailService.verificarEmailExistente(usuario.getEmail());
         emailService.validarEmailZup(usuario.getEmail());
-        senhaService.criptografarSenha(usuario);
+        usuario.setSenha(segurancaService.criptografarSenha(usuario.getSenha()));
         return usuarioRepository.save(usuario);
     }
 
