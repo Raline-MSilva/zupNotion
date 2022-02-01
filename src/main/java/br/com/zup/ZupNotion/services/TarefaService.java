@@ -67,8 +67,7 @@ public class TarefaService {
             return new PageImpl<>(tarefasPorPrioridade, pageable, tarefasPorPrioridade.size());
         }
 
-        List<Tarefa> tarefasUsuario = usuario.get().getTarefas();
-        return new PageImpl<>(tarefasUsuario, pageable, tarefasUsuario.size());
+        return tarefaRepository.findAllByUsuario(usuario.get(), pageable);
     }
 
     public Tarefa localizarTarefaPorId(Integer id) {
