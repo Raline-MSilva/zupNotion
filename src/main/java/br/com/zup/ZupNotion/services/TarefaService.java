@@ -8,10 +8,8 @@ import br.com.zup.ZupNotion.models.enums.Status;
 import br.com.zup.ZupNotion.repositories.TarefaRepository;
 import br.com.zup.ZupNotion.repositories.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
-
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -40,35 +38,37 @@ public class TarefaService {
         return tarefaRepository.save(tarefa);
     }
 
-    public List<Tarefa> buscarTarefas(String id, Status status, Prioridade prioridade) {
-        Pageable paginacaoTarefas = PageRequest.of(0, 2);
+    public Page<Tarefa> buscarTarefas(String id, String status, String prioridade, Pageable pageable) {
         Optional<Usuario> usuario = usuarioRepository.findById(id);
 
         if (status != null) {
             List<Tarefa> tarefasPorStatus = new ArrayList<>();
 
-            for (Tarefa tarefa : tarefaRepository.findAllByStatus(status, paginacaoTarefas)) {
+            Status statusTarefa = Status.valueOf(status);
+            for (Tarefa tarefa : tarefaRepository.findAllByStatus(statusTarefa, pageable)) {
 
                 if (tarefa.getUsuario() == usuario.get()) {
                     tarefasPorStatus.add(tarefa);
                 }
             }
 
-            return tarefasPorStatus;
+            return new PageImpl<>(tarefasPorStatus, pageable, tarefasPorStatus.size());
         }
         if (prioridade != null) {
             List<Tarefa> tarefasPorPrioridade = new ArrayList<>();
 
-            for (Tarefa tarefa : tarefaRepository.findAllByPrioridade(prioridade)) {
+            Prioridade prioridadeTarefa = Prioridade.valueOf(prioridade);
+            for (Tarefa tarefa : tarefaRepository.findAllByPrioridade(prioridadeTarefa, pageable)) {
                 if (tarefa.getUsuario() == usuario.get()) {
                     tarefasPorPrioridade.add(tarefa);
                 }
             }
 
-            return tarefasPorPrioridade;
+            return new PageImpl<>(tarefasPorPrioridade, pageable, tarefasPorPrioridade.size());
         }
 
-        return usuario.get().getTarefas();
+        List<Tarefa> tarefasUsuario = usuario.get().getTarefas();
+        return new PageImpl<>(tarefasUsuario, pageable, tarefasUsuario.size());
     }
 
     public Tarefa localizarTarefaPorId(Integer id) {

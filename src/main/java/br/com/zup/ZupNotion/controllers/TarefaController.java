@@ -5,24 +5,17 @@ import br.com.zup.ZupNotion.models.dtos.AlterarStatusDTO;
 import br.com.zup.ZupNotion.models.dtos.CadastroTarefaDTO;
 import br.com.zup.ZupNotion.models.dtos.RespostaTarefaDTO;
 import br.com.zup.ZupNotion.models.dtos.TarefaResumoDTO;
-import br.com.zup.ZupNotion.models.enums.Prioridade;
-import br.com.zup.ZupNotion.models.enums.Status;
 import br.com.zup.ZupNotion.services.TarefaService;
 import br.com.zup.ZupNotion.services.UsuarioLogadoService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -48,15 +41,17 @@ public class TarefaController {
     }
 
     @GetMapping
-    public List<TarefaResumoDTO> buscarTarefas(@RequestParam(required = false) Status status,
-                                               @RequestParam(required = false)Prioridade prioridade){
+    public Page<TarefaResumoDTO> buscarTarefas(@RequestParam(required = false) String status,
+                                               @RequestParam(required = false) String prioridade,
+                                               @PageableDefault(page = 0, size = 2, sort = "titulo",
+                                                       direction = Sort.Direction.ASC) Pageable pageable){
         List<TarefaResumoDTO> tarefas = new ArrayList<>();
 
-        for (Tarefa tarefa : tarefaService.buscarTarefas(usuarioLogadoService.pegarId(), status, prioridade)){
+        for (Tarefa tarefa : tarefaService.buscarTarefas(usuarioLogadoService.pegarId(), status, prioridade, pageable)){
             TarefaResumoDTO tarefaResumoDTO = modelMapper.map(tarefa, TarefaResumoDTO.class);
             tarefas.add(tarefaResumoDTO);
         }
-        return tarefas;
+        return new PageImpl<>(tarefas, pageable, tarefas.size());
     }
 
     @PatchMapping("/{id}")
