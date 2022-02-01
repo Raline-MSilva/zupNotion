@@ -5,15 +5,16 @@ import br.com.zup.ZupNotion.models.dtos.AlterarStatusDTO;
 import br.com.zup.ZupNotion.models.dtos.CadastroTarefaDTO;
 import br.com.zup.ZupNotion.models.dtos.RespostaTarefaDTO;
 import br.com.zup.ZupNotion.models.dtos.TarefaResumoDTO;
-import br.com.zup.ZupNotion.models.enums.Prioridade;
-import br.com.zup.ZupNotion.models.enums.Status;
 import br.com.zup.ZupNotion.services.TarefaService;
 import br.com.zup.ZupNotion.services.UsuarioLogadoService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -39,27 +40,18 @@ public class TarefaController {
         return modelMapper.map(tarefaService.cadastrarTarefa(tarefa, usuarioLogadoService.pegarId()), RespostaTarefaDTO.class);
     }
 
-//    @GetMapping
-//    public List<TarefaResumoDTO> buscarTarefas(@RequestParam(required = false) Status status,
-//                                               @RequestParam(required = false) Prioridade prioridade){
-//        List<TarefaResumoDTO> tarefas = new ArrayList<>();
-//
-//        for (Tarefa tarefa : tarefaService.buscarTarefas(usuarioLogadoService.pegarId(), status, prioridade)){
-//            TarefaResumoDTO tarefaResumoDTO = modelMapper.map(tarefa, TarefaResumoDTO.class);
-//            tarefas.add(tarefaResumoDTO);
-//        }
-//        return tarefas;
-//    }
-
     @GetMapping
-    public ResponseEntity<Page<TarefaResumoDTO>> findPage(
-            @RequestParam(value = "page", defaultValue = "0") Integer page,
-            @RequestParam(value = "linesPerPage", defaultValue = "3") Integer linesPerPage,
-            @RequestParam(value = "orderBy", defaultValue = "titulo") String orderBy,
-            @RequestParam(value = "direction", defaultValue = "ASC") String direction) {
-        Page<Tarefa> list = tarefaService.findPage(page, linesPerPage, orderBy, direction);
-        Page<TarefaResumoDTO> listDto = list.map(TarefaResumoDTO::new);
-        return ResponseEntity.ok().body(listDto);
+    public Page<TarefaResumoDTO> buscarTarefas(@RequestParam(required = false) String status,
+                                               @RequestParam(required = false) String prioridade,
+                                               @PageableDefault(page = 0, size = 2, sort = "titulo",
+                                                       direction = Sort.Direction.ASC) Pageable pageable){
+        List<TarefaResumoDTO> tarefas = new ArrayList<>();
+
+        for (Tarefa tarefa : tarefaService.buscarTarefas(usuarioLogadoService.pegarId(), status, prioridade, pageable)){
+            TarefaResumoDTO tarefaResumoDTO = modelMapper.map(tarefa, TarefaResumoDTO.class);
+            tarefas.add(tarefaResumoDTO);
+        }
+        return new PageImpl<>(tarefas, pageable, tarefas.size());
     }
 
     @PatchMapping("/{id}")
