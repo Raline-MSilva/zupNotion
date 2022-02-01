@@ -43,8 +43,7 @@ public class TarefaController {
     @GetMapping
     public Page<TarefaResumoDTO> buscarTarefas(@RequestParam(required = false) String status,
                                                @RequestParam(required = false) String prioridade,
-                                               @PageableDefault(page = 0, size = 2, sort = "titulo",
-                                                       direction = Sort.Direction.ASC) Pageable pageable){
+                                               @PageableDefault(page = 0, size = 2) Pageable pageable){
         List<TarefaResumoDTO> tarefas = new ArrayList<>();
 
         for (Tarefa tarefa : tarefaService.buscarTarefas(usuarioLogadoService.pegarId(), status, prioridade, pageable)){
@@ -63,6 +62,7 @@ public class TarefaController {
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deletarTarefa (@PathVariable Integer id){
         tarefaService.deletarTarefa(id, usuarioLogadoService.pegarId());
     }
