@@ -32,6 +32,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -49,6 +50,7 @@ public class TarefaControllerTest {
 
     @MockBean
     private UsuarioLogadoService usuarioLogadoService;
+
 
 
     @Autowired
@@ -209,6 +211,7 @@ public class TarefaControllerTest {
 
     }
 
+
     @Test
     @WithMockUser("tarefa@tarefa.com")
     public void testarBuscarTarefasPorStatus() throws Exception {
@@ -239,15 +242,6 @@ public class TarefaControllerTest {
 
     }
 
-    @Test
-    @WithMockUser("tarefa@tarefa.com")
-    public void testarBuscarTarefaPorStatusExcecao() throws Exception {
-        Mockito.doThrow(TarefaNaoExisteException.class).when(tarefaService).buscarTarefas(tarefa.getId(), tarefa.getStatus(), tarefa.getPrioridade(), Mockito.anyString();)
-    }
-
-
-
      */
-
 
 }
