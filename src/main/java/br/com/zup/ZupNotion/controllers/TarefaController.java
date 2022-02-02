@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -44,6 +43,7 @@ public class TarefaController {
     public Page<TarefaResumoDTO> buscarTarefas(@RequestParam(required = false) String status,
                                                @RequestParam(required = false) String prioridade,
                                                @PageableDefault(page = 0, size = 2) Pageable pageable){
+
         List<TarefaResumoDTO> tarefas = new ArrayList<>();
 
         for (Tarefa tarefa : tarefaService.buscarTarefas(usuarioLogadoService.pegarId(), status, prioridade, pageable)){
@@ -74,6 +74,12 @@ public class TarefaController {
         tarefa.setTitulo(cadastroTarefaDTO.getTitulo());
         tarefa.setDescricao(cadastroTarefaDTO.getDescricao());
         tarefaService.salvarTarefa(tarefa);
+    }
+
+    @PostMapping("/arquivosCSV")
+    public void importarArquivosCSV (){
+        tarefaService.importarArquivosCSV("C:\\Users\\anna.chaves\\Documents\\tarefasAA.csv",
+                usuarioLogadoService.pegarId());
     }
 
 }
