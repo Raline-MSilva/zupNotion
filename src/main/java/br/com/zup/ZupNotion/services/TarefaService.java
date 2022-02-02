@@ -2,13 +2,16 @@ package br.com.zup.ZupNotion.services;
 
 import br.com.zup.ZupNotion.exceptions.TarefaNaoExisteException;
 import br.com.zup.ZupNotion.models.Tarefa;
+import br.com.zup.ZupNotion.models.TarefaImportacaoArquivo;
 import br.com.zup.ZupNotion.models.Usuario;
 import br.com.zup.ZupNotion.models.enums.Prioridade;
 import br.com.zup.ZupNotion.models.enums.Status;
 import br.com.zup.ZupNotion.repositories.TarefaRepository;
 import br.com.zup.ZupNotion.repositories.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -24,6 +27,9 @@ public class TarefaService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private TarefaImportacaoArquivo importacaoArquivo;
 
     public Tarefa cadastrarTarefa(Tarefa tarefa, String id) {
         Optional<Usuario> usuario = usuarioRepository.findById(id);
@@ -51,7 +57,6 @@ public class TarefaService {
                     tarefasPorStatus.add(tarefa);
                 }
             }
-
             return new PageImpl<>(tarefasPorStatus, pageable, tarefasPorStatus.size());
         }
         if (prioridade != null) {
@@ -63,7 +68,6 @@ public class TarefaService {
                     tarefasPorPrioridade.add(tarefa);
                 }
             }
-
             return new PageImpl<>(tarefasPorPrioridade, pageable, tarefasPorPrioridade.size());
         }
 
@@ -84,10 +88,13 @@ public class TarefaService {
             Optional<Usuario> usuario = usuarioRepository.findById(usuarioId);
             usuario.get().getTarefas().remove(tarefa);
             tarefaRepository.deleteById(tarefaId);
-        }
-        catch (TarefaNaoExisteException exception){
+        } catch (TarefaNaoExisteException exception) {
             throw new TarefaNaoExisteException("Tarefa não existe");
         }
+    }
+
+    public void importarArquivosCSV (String caminho, String usuarioId){
+        importacaoArquivo.salvarTarefasComUsuario(caminho, usuarioId);
     }
 
 }
