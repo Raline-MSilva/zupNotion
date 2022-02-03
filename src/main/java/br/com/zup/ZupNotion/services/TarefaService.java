@@ -1,5 +1,6 @@
 package br.com.zup.ZupNotion.services;
 
+import br.com.zup.ZupNotion.exceptions.ErroAoLerArquivoException;
 import br.com.zup.ZupNotion.exceptions.TarefaNaoExisteException;
 import br.com.zup.ZupNotion.models.Tarefa;
 import br.com.zup.ZupNotion.models.TarefaImportacaoCSV;
@@ -100,7 +101,7 @@ public class TarefaService {
             List<Tarefa> listaTarefas = importacaoCSV.salvarTarefasComUsuario(usuarioId, file.getInputStream());
             tarefaRepository.saveAll(listaTarefas);
         } catch (IOException e) {
-            throw new RuntimeException("fail to store csv data: " + e.getMessage());
+            throw new ErroAoLerArquivoException("Erro ao ler o arquivo: " + e.getMessage());
         }
     }
 
@@ -110,5 +111,6 @@ public class TarefaService {
         }
         return false;
     }
+
 
 }
