@@ -63,9 +63,7 @@ public class TarefaController {
     @PatchMapping("/{id}")
     public void alterarStatusTarefa(@RequestBody @Valid AlterarStatusDTO alterarStatusDTO,
                                     @PathVariable Integer id) {
-        Tarefa tarefa = tarefaService.localizarTarefaPorId(id);
-        tarefa.setStatus(alterarStatusDTO.getStatus());
-        tarefaService.salvarTarefa(tarefa);
+        tarefaService.alterarStatusTarefa(id, usuarioLogadoService.pegarId(), alterarStatusDTO.getStatus());
     }
 
     @DeleteMapping("/{id}")
@@ -77,10 +75,8 @@ public class TarefaController {
     @PutMapping("/{id}")
     public void alterarTarefaPorId(@RequestBody @Valid CadastroTarefaDTO cadastroTarefaDTO,
                                    @PathVariable Integer id) {
-        Tarefa tarefa = tarefaService.localizarTarefaPorId(id);
-        tarefa.setTitulo(cadastroTarefaDTO.getTitulo());
-        tarefa.setDescricao(cadastroTarefaDTO.getDescricao());
-        tarefaService.salvarTarefa(tarefa);
+        tarefaService.alterarDadosTarefa(id, usuarioLogadoService.pegarId(), cadastroTarefaDTO.getTitulo(),
+                cadastroTarefaDTO.getDescricao());
     }
 
     @PostMapping("/arquivosCSV")
