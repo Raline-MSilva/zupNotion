@@ -1,6 +1,8 @@
 package br.com.zup.ZupNotion.controllers;
 
+
 import br.com.zup.ZupNotion.config.ResponseMessage;
+import br.com.zup.ZupNotion.components.ConversorDeTarefasComPaginacao;
 import br.com.zup.ZupNotion.models.Tarefa;
 import br.com.zup.ZupNotion.models.TarefaImportacaoCSV;
 import br.com.zup.ZupNotion.models.dtos.AlterarStatusDTO;
@@ -21,7 +23,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -37,7 +38,11 @@ public class TarefaController {
     private UsuarioLogadoService usuarioLogadoService;
 
     @Autowired
-    TarefaImportacaoCSV importacaoCSV;
+    private TarefaImportacaoCSV importacaoCSV;
+
+    @Autowired
+    private ConversorDeTarefasComPaginacao conversorDeTarefasComPaginacao;
+
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -51,14 +56,12 @@ public class TarefaController {
                                                @RequestParam(required = false) String prioridade,
                                                @PageableDefault(page = 0, size = 2) Pageable pageable) {
 
-        List<TarefaResumoDTO> tarefas = new ArrayList<>();
 
-        for (Tarefa tarefa : tarefaService.buscarTarefas(usuarioLogadoService.pegarId(), status, prioridade, pageable)) {
-            TarefaResumoDTO tarefaResumoDTO = modelMapper.map(tarefa, TarefaResumoDTO.class);
-            tarefas.add(tarefaResumoDTO);
-        }
+        var tarefasService = tarefaService.buscarTarefas(usuarioLogadoService.pegarId(), status, prioridade, pageable);
+        List<TarefaResumoDTO> tarefas = conversorDeTarefasComPaginacao.converterPaginaEmLista(tarefasService);
         return new PageImpl<>(tarefas, pageable, tarefas.size());
     }
+
 
     @PatchMapping("/{id}")
     public void alterarStatusTarefa(@RequestBody @Valid AlterarStatusDTO alterarStatusDTO,

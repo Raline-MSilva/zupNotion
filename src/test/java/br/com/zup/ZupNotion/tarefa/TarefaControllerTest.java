@@ -1,6 +1,7 @@
 package br.com.zup.ZupNotion.tarefa;
 
 import br.com.zup.ZupNotion.components.Conversor;
+import br.com.zup.ZupNotion.components.ConversorDeTarefasComPaginacao;
 import br.com.zup.ZupNotion.config.security.JWT.JWTComponent;
 import br.com.zup.ZupNotion.config.security.JWT.UsuarioLoginService;
 import br.com.zup.ZupNotion.controllers.TarefaController;
@@ -23,6 +24,9 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -50,6 +54,21 @@ public class TarefaControllerTest {
 
     @MockBean
     private UsuarioLogadoService usuarioLogadoService;
+
+    @MockBean
+    private Pageable pageable;
+
+    @MockBean
+    private List<Tarefa> tarefas;
+
+    @MockBean
+    private Page<Tarefa> tarefaPage;
+
+    @MockBean
+    private ConversorDeTarefasComPaginacao conversorDeTarefasComPaginacao;
+
+    @MockBean
+    private TarefaResumoDTO tarefaResumoDTO;
 
 
 
@@ -195,18 +214,21 @@ public class TarefaControllerTest {
     }
 
 
-    /*
     @Test
     @WithMockUser("tarefa@tarefa.com")
     public void testarBuscarTarefas() throws Exception {
-        Mockito.when(tarefaService.buscarTarefas(usuario.getId(), tarefa.getStatus(), tarefa.getPrioridade())).thenReturn(Arrays.asList(tarefa));
+        Mockito.when(usuarioLogadoService.pegarId()).thenReturn("id");
+        Mockito.when(tarefaService.buscarTarefas(Mockito.any(), Mockito.anyString(), Mockito.anyString(), Mockito.any()))
+                .thenReturn(tarefaPage);
+        Mockito.when(conversorDeTarefasComPaginacao.converterPaginaEmLista(Mockito.any())).thenReturn(List.of(tarefaResumoDTO));
+        String json = objectMapper.writeValueAsString(tarefaResumoDTO);
         ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.get("/tarefas")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().is(200))
                 .andExpect(MockMvcResultMatchers.jsonPath("$").isArray());
 
         String jsonResposta = resultado.andReturn().getResponse().getContentAsString();
-        List<TarefaResumoDTO> tarefas = objectMapper.readValue(jsonResposta, new TypeReference<List<TarefaResumoDTO>>() {
+        Page<TarefaResumoDTO> tarefas = objectMapper.readValue(jsonResposta, new TypeReference<Page<TarefaResumoDTO>>() {
         });
 
     }
@@ -241,7 +263,5 @@ public class TarefaControllerTest {
         });
 
     }
-
-     */
 
 }
