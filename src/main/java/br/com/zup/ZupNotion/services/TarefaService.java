@@ -2,6 +2,7 @@ package br.com.zup.ZupNotion.services;
 
 import br.com.zup.ZupNotion.exceptions.ErroAoLerArquivoException;
 import br.com.zup.ZupNotion.exceptions.TarefaNaoExisteException;
+import br.com.zup.ZupNotion.exceptions.UsuarioNaoExisteException;
 import br.com.zup.ZupNotion.models.Tarefa;
 import br.com.zup.ZupNotion.models.TarefaImportacaoCSV;
 import br.com.zup.ZupNotion.models.Usuario;
@@ -85,13 +86,44 @@ public class TarefaService {
         throw new TarefaNaoExisteException("Tarefa não existe");
     }
 
+    public void alterarStatusTarefa(Integer tarefaId, String usuarioId, Status status) {
+        Tarefa tarefa = localizarTarefaPorId(tarefaId);
+
+        if (tarefa.getUsuario() == buscarUsuario(usuarioId)) {
+            tarefa.setStatus(status);
+            salvarTarefa(tarefa);
+        } else {
+            throw new TarefaNaoExisteException("Tarefa não existe");
+        }
+    }
+
+    public void alterarDadosTarefa(Integer tarefaId, String usuarioId, String titulo, String descricao) {
+        Tarefa tarefa = localizarTarefaPorId(tarefaId);
+
+        if (tarefa.getUsuario() == buscarUsuario(usuarioId)) {
+            tarefa.setTitulo(titulo);
+            tarefa.setDescricao(descricao);
+            salvarTarefa(tarefa);
+        } else {
+            throw new TarefaNaoExisteException("Tarefa não existe");
+        }
+    }
+
+    public Usuario buscarUsuario(String usuarioId) {
+        Optional<Usuario> usuario = usuarioRepository.findById(usuarioId);
+        if (usuario.isPresent()) {
+            return usuario.get();
+        }
+        throw new UsuarioNaoExisteException("Usuário não existe");
+    }
+
     public void deletarTarefa(Integer tarefaId, String usuarioId) {
-        try {
-            Tarefa tarefa = localizarTarefaPorId(tarefaId);
-            Optional<Usuario> usuario = usuarioRepository.findById(usuarioId);
-            usuario.get().getTarefas().remove(tarefa);
+        Tarefa tarefa = localizarTarefaPorId(tarefaId);
+        Usuario usuario = buscarUsuario(usuarioId);
+        if (tarefa.getUsuario() == usuario) {
+            usuario.getTarefas().remove(tarefa);
             tarefaRepository.deleteById(tarefaId);
-        } catch (TarefaNaoExisteException exception) {
+        }else{
             throw new TarefaNaoExisteException("Tarefa não existe");
         }
     }
@@ -105,8 +137,8 @@ public class TarefaService {
         }
     }
 
-    public boolean validarSeArquivoCSV(MultipartFile file){
-        if(importacaoCSV.verificarFormatoCSV(file)){
+    public boolean validarSeArquivoCSV(MultipartFile file) {
+        if (importacaoCSV.verificarFormatoCSV(file)) {
             return true;
         }
         return false;
