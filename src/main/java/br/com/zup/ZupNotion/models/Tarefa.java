@@ -25,21 +25,20 @@ public class Tarefa {
     @Column(nullable = false)
     private String descricao;
     @Enumerated(EnumType.STRING)
-    private Prioridade prioridade;
+    private Prioridade prioridade = Prioridade.MEDIA;
     @Enumerated(EnumType.STRING)
     private Status status = Status.A_FAZER;
     @Column(name = "data_de_cadastro")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime dataDeCadastro = LocalDateTime.now();
     @Column(name = "estimativa_em_horas")
-    private int estimativaEmHoras;
+    private Integer estimativaEmHoras;
     @ManyToOne
     private Usuario usuario;
 
-    public Tarefa(String titulo, String descricao, Prioridade prioridade, int estimativaEmHoras) {
+    public Tarefa(String titulo, String descricao, Integer estimativaEmHoras) {
         this.titulo = titulo;
         this.descricao = descricao;
-        this.prioridade = prioridade;
         this.estimativaEmHoras = estimativaEmHoras;
     }
 
