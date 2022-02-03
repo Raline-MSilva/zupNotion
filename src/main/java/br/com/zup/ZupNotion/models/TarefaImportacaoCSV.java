@@ -1,6 +1,7 @@
 package br.com.zup.ZupNotion.models;
 
 import br.com.zup.ZupNotion.exceptions.ErroAoLerArquivoException;
+import br.com.zup.ZupNotion.models.enums.Prioridade;
 import br.com.zup.ZupNotion.repositories.TarefaRepository;
 import br.com.zup.ZupNotion.repositories.UsuarioRepository;
 import org.apache.commons.csv.CSVFormat;
@@ -25,7 +26,7 @@ public class TarefaImportacaoCSV {
     UsuarioRepository usuarioRepository;
 
     public static String TYPE = "text/csv";
-    static String[] HEADERs = {"Titulo", "Descricao", "Estimativa em horas"};
+    static String[] HEADERs = {"Titulo", "Descricao", "Prioridade", "Estimativa em horas"};
 
     public boolean verificarFormatoCSV(MultipartFile file) {
 
@@ -66,8 +67,8 @@ public class TarefaImportacaoCSV {
                 Tarefa tarefa = new Tarefa(
                         csvRecord.get("titulo"),
                         csvRecord.get("descricao"),
-                        Integer.parseInt(csvRecord.get("Estimativa em horas"))
-                );
+                        csvRecord.get("prioridade"),
+                        Integer.parseInt(csvRecord.get("Estimativa em horas")));
 
                 listaTarefas.add(tarefa);
             }
