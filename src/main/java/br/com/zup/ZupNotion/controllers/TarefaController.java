@@ -39,8 +39,6 @@ public class TarefaController {
     @Autowired
     TarefaImportacaoCSV importacaoCSV;
 
-    private static String UPLOADED_FOLDER = "F://temp//";
-
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public RespostaTarefaDTO cadastrar(@RequestBody @Valid CadastroTarefaDTO cadastroTarefaDTO) {
@@ -91,10 +89,10 @@ public class TarefaController {
 
         if (tarefaService.validarSeArquivoCSV(file)) {
                 tarefaService.salvarCSV(file, usuarioLogadoService.pegarId());
-                message = "Uploaded realizado com sucesso: " + file.getOriginalFilename();
+                message = "Upload realizado com sucesso: " + file.getOriginalFilename();
                 return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
             }else if(!tarefaService.validarSeArquivoCSV(file)){
-                message = "Não foi possível o upload do arquivo: " + file.getOriginalFilename() + "!";
+                message = "Não foi possível realizar o upload do arquivo: " + file.getOriginalFilename() + "!";
                 return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
             } else{
         message = "Adicione um arquivo .csv para upload!";
