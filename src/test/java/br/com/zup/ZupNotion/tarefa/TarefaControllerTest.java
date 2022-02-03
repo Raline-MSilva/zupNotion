@@ -233,7 +233,7 @@ public class TarefaControllerTest {
 
     }
 
-/*
+
     @Test
     @WithMockUser("tarefa@tarefa.com")
     public void testarBuscarTarefasPorStatus() throws Exception {
@@ -263,7 +263,5 @@ public class TarefaControllerTest {
         });
 
     }
-
- */
 
 }
