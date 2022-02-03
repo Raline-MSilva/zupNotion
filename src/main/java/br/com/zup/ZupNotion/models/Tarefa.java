@@ -25,7 +25,7 @@ public class Tarefa {
     @Column(nullable = false)
     private String descricao;
     @Enumerated(EnumType.STRING)
-    private Prioridade prioridade = Prioridade.MEDIA;
+    private Prioridade prioridade;
     @Enumerated(EnumType.STRING)
     private Status status = Status.A_FAZER;
     @Column(name = "data_de_cadastro")
@@ -36,9 +36,10 @@ public class Tarefa {
     @ManyToOne
     private Usuario usuario;
 
-    public Tarefa(String titulo, String descricao, Integer estimativaEmHoras) {
+    public Tarefa(String titulo, String descricao, String prioridade, Integer estimativaEmHoras) {
         this.titulo = titulo;
         this.descricao = descricao;
+        this.prioridade = Prioridade.valueOf(prioridade);
         this.estimativaEmHoras = estimativaEmHoras;
     }
 
