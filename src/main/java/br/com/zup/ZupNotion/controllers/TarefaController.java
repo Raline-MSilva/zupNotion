@@ -5,7 +5,7 @@ import br.com.zup.ZupNotion.config.ResponseMessage;
 import br.com.zup.ZupNotion.components.ConversorDeTarefasComPaginacao;
 import br.com.zup.ZupNotion.models.Tarefa;
 import br.com.zup.ZupNotion.models.TarefaImportacaoCSV;
-import br.com.zup.ZupNotion.models.dtos.AlterarStatusDTO;
+import br.com.zup.ZupNotion.models.dtos.AlterarDadosTarefaDTO;
 import br.com.zup.ZupNotion.models.dtos.CadastroTarefaDTO;
 import br.com.zup.ZupNotion.models.dtos.RespostaTarefaDTO;
 import br.com.zup.ZupNotion.models.dtos.TarefaResumoDTO;
@@ -62,24 +62,17 @@ public class TarefaController {
         return new PageImpl<>(tarefas, pageable, tarefas.size());
     }
 
-
-    @PatchMapping("/{id}")
-    public void alterarStatusTarefa(@RequestBody @Valid AlterarStatusDTO alterarStatusDTO,
-                                    @PathVariable Integer id) {
-        tarefaService.alterarStatusTarefa(id, usuarioLogadoService.pegarId(), alterarStatusDTO.getStatus());
-    }
-
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deletarTarefa(@PathVariable Integer id) {
         tarefaService.deletarTarefa(id, usuarioLogadoService.pegarId());
     }
 
-    @PutMapping("/{id}")
-    public void alterarTarefaPorId(@RequestBody @Valid CadastroTarefaDTO cadastroTarefaDTO,
+    @PatchMapping("/{id}")
+    public void alterarTarefaPorId(@RequestBody @Valid AlterarDadosTarefaDTO alterarDadosTarefaDTO,
                                    @PathVariable Integer id) {
-        tarefaService.alterarDadosTarefa(id, usuarioLogadoService.pegarId(), cadastroTarefaDTO.getTitulo(),
-                cadastroTarefaDTO.getDescricao());
+        tarefaService.alterarDadosTarefa(id, usuarioLogadoService.pegarId(), alterarDadosTarefaDTO.getTitulo(),
+                alterarDadosTarefaDTO.getDescricao(), alterarDadosTarefaDTO.getStatus());
     }
 
     @PostMapping("/arquivosCSV")

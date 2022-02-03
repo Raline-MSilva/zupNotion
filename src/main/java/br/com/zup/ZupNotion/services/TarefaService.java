@@ -97,12 +97,13 @@ public class TarefaService {
         }
     }
 
-    public void alterarDadosTarefa(Integer tarefaId, String usuarioId, String titulo, String descricao) {
+    public void alterarDadosTarefa(Integer tarefaId, String usuarioId, String titulo, String descricao, Status status) {
         Tarefa tarefa = localizarTarefaPorId(tarefaId);
 
         if (tarefa.getUsuario() == buscarUsuario(usuarioId)) {
             tarefa.setTitulo(titulo);
             tarefa.setDescricao(descricao);
+            tarefa.setStatus(status);
             salvarTarefa(tarefa);
         } else {
             throw new TarefaNaoExisteException("Tarefa não existe");
