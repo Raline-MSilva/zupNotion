@@ -32,14 +32,14 @@ public class Tarefa {
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime dataDeCadastro = LocalDateTime.now();
     @Column(name = "estimativa_em_horas")
-    private int estimativaEmHoras;
+    private Integer estimativaEmHoras;
     @ManyToOne
     private Usuario usuario;
 
-    public Tarefa(String titulo, String descricao, Prioridade prioridade, int estimativaEmHoras) {
+    public Tarefa(String titulo, String descricao, String prioridade, Integer estimativaEmHoras) {
         this.titulo = titulo;
         this.descricao = descricao;
-        this.prioridade = prioridade;
+        this.prioridade = Prioridade.valueOf(prioridade);
         this.estimativaEmHoras = estimativaEmHoras;
     }
 

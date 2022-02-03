@@ -2,12 +2,14 @@ package br.com.zup.ZupNotion.config;
 
 import br.com.zup.ZupNotion.exceptions.*;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,6 +65,12 @@ public class ControllerAdvice {
             return new MensagemDeErro("Status deve ser A_FAZER, EM_ANDAMENTO ou CONCLUIDA");
         }
         return new MensagemDeErro(exception.getLocalizedMessage());
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity arquivoMaiorQueOPermitido(MaxUploadSizeExceededException exc) {
+        return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(
+                new ResponseMessage("Arquivo maior que 2Mb não permitido!"));
     }
 
 }
