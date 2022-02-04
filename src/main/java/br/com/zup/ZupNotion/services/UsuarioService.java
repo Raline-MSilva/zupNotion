@@ -20,9 +20,10 @@ public class UsuarioService {
     @Autowired
     private SenhaService senhaService;
 
-    public Usuario cadastrarUsuario(Usuario usuario) {
+    public Usuario cadastrarUsuario(Usuario usuario, String role) {
         emailService.verificarEmailExistente(usuario.getEmail());
         emailService.validarEmailZup(usuario.getEmail());
+        usuario.setRole(role);
         usuario.setSenha(senhaService.criptografarSenha(usuario.getSenha()));
         return usuarioRepository.save(usuario);
     }

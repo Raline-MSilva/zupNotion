@@ -23,5 +23,6 @@ public class Usuario {
     private String senha;
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     private List<Tarefa> tarefas;
+    private String role;
 
 }

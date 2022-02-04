@@ -3,8 +3,10 @@ package br.com.zup.ZupNotion.config.security.JWT;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 @Data
@@ -14,11 +16,12 @@ public class UsuarioLogado implements UserDetails {
     private String id;
     private String email;
     private String senha;
+    private String role;
 
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return Arrays.asList(new SimpleGrantedAuthority(role));
     }
 
     @Override
