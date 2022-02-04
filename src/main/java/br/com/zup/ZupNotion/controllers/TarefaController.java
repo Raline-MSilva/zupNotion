@@ -42,7 +42,7 @@ public class TarefaController {
     @ResponseStatus(HttpStatus.CREATED)
     public RespostaTarefaDTO cadastrar(@RequestBody @Valid CadastroTarefaDTO cadastroTarefaDTO) {
         Tarefa tarefa = modelMapper.map(cadastroTarefaDTO, Tarefa.class);
-        return modelMapper.map(tarefaService.cadastrarTarefa(tarefa), RespostaTarefaDTO.class);
+        return modelMapper.map(tarefaService.cadastrarTarefa(tarefa, cadastroTarefaDTO.getEmail()), RespostaTarefaDTO.class);
     }
 
     @GetMapping
@@ -54,8 +54,6 @@ public class TarefaController {
         List<TarefaResumoDTO> tarefas = tarefaService.buscarTarefas(status, prioridade, pageable).stream()
                 .map(tarefa -> modelMapper.map(tarefa, TarefaResumoDTO.class)).collect(Collectors.toList());
 
-//        var tarefasService = tarefaService.buscarTarefas(status, prioridade, pageable);
-//        List<TarefaResumoDTO> tarefas = conversorDeTarefasComPaginacao.converterPaginaEmLista(tarefasService);
         return new PageImpl<>(tarefas, pageable, tarefas.size());
     }
 

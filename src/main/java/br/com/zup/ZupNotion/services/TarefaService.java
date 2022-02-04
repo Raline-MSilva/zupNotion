@@ -33,9 +33,11 @@ public class TarefaService {
     private UsuarioService usuarioService;
     @Autowired
     private TarefaImportacaoCSV importacaoCSV;
+    @Autowired
+    private EmailService emailService;
 
-    public Tarefa cadastrarTarefa(Tarefa tarefa) {
-        Usuario usuario = usuarioService.buscarUsuarioLogado();
+    public Tarefa cadastrarTarefa(Tarefa tarefa, String email) {
+        Usuario usuario = emailService.localizarUsuarioPorEmail(email);
         tarefa.setDataDeCadastro(LocalDateTime.now());
         tarefa.setStatus(Status.A_FAZER);
         usuario.getTarefas().add(tarefa);
