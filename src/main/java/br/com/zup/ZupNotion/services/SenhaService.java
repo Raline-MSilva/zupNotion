@@ -17,7 +17,7 @@ public class SenhaService {
     private BCryptPasswordEncoder encoder;
 
     public Usuario alterarSenha(Usuario usuario) {
-        Usuario usuarioBanco = emailService.localizarPorEmail(usuario.getEmail());
+        Usuario usuarioBanco = emailService.localizarUsuarioPorEmail(usuario.getEmail());
         usuarioBanco.setSenha(criptografarSenha(usuario.getSenha()));
         return usuarioRepository.save(usuarioBanco);
     }

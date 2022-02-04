@@ -35,7 +35,7 @@ public class EmailService {
         return true;
     }
 
-    public Usuario localizarPorEmail(String email) {
+    public Usuario localizarUsuarioPorEmail(String email) {
         Optional<Usuario> usuarioOptional = usuarioRepository.findByEmail(email);
         if (usuarioOptional.isPresent()) {
             return usuarioOptional.get();

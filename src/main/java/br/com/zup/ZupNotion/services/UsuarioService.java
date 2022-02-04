@@ -31,8 +31,8 @@ public class UsuarioService {
         return usuarioRepository.save(usuario);
     }
 
-    public void verificarRole (String role){
-        if(!Objects.equals(role, "ROLE_ADMIN") && !Objects.equals(role, "ROLE_USER")){
+    public void verificarRole(String role) {
+        if (!Objects.equals(role, "ROLE_ADMIN") && !Objects.equals(role, "ROLE_USER")) {
             throw new PerfilInvalidoException("Tipo de perfil inválido");
         }
     }
@@ -51,4 +51,10 @@ public class UsuarioService {
         throw new UsuarioNaoExisteException("Usuário não existe");
     }
 
+    public void deletarUsuario(String email) {
+        Usuario usuario = emailService.localizarUsuarioPorEmail(email);
+        usuarioRepository.delete(usuario);
+    }
+
 }
+
