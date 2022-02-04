@@ -19,5 +19,7 @@ public class CadastroTarefaDTO {
     @NotNull
     private Prioridade prioridade;
     private int estimativaEmHoras;
+    @NotBlank(message = "{validacao.not-blank}")
+    private String email;
 
 }
