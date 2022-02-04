@@ -2,9 +2,8 @@ package br.com.zup.ZupNotion.services;
 
 import br.com.zup.ZupNotion.exceptions.ErroAoLerArquivoException;
 import br.com.zup.ZupNotion.exceptions.TarefaNaoExisteException;
-import br.com.zup.ZupNotion.exceptions.UsuarioNaoExisteException;
 import br.com.zup.ZupNotion.models.Tarefa;
-import br.com.zup.ZupNotion.models.TarefaImportacaoCSV;
+import br.com.zup.ZupNotion.components.TarefaImportacaoCSV;
 import br.com.zup.ZupNotion.models.Usuario;
 import br.com.zup.ZupNotion.models.enums.Prioridade;
 import br.com.zup.ZupNotion.models.enums.Status;
@@ -19,28 +18,28 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class TarefaService {
 
     @Autowired
     private TarefaRepository tarefaRepository;
-
     @Autowired
     private UsuarioRepository usuarioRepository;
-
+    @Autowired
+    private UsuarioService usuarioService;
     @Autowired
     private TarefaImportacaoCSV importacaoCSV;
 
-    public Tarefa cadastrarTarefa(Tarefa tarefa, String id) {
-        Optional<Usuario> usuario = usuarioRepository.findById(id);
+    public Tarefa cadastrarTarefa(Tarefa tarefa) {
+        Usuario usuario = usuarioService.buscarUsuarioLogado();
         tarefa.setDataDeCadastro(LocalDateTime.now());
         tarefa.setStatus(Status.A_FAZER);
-        usuario.get().getTarefas().add(tarefa);
-        tarefa.setUsuario(usuario.get());
+        usuario.getTarefas().add(tarefa);
+        tarefa.setUsuario(usuario);
         return salvarTarefa(tarefa);
     }
 
@@ -48,59 +47,39 @@ public class TarefaService {
         return tarefaRepository.save(tarefa);
     }
 
-    public Page<Tarefa> buscarTarefas(String id, String status, String prioridade, Pageable pageable) {
-        Optional<Usuario> usuario = usuarioRepository.findById(id);
+    public Page<Tarefa> buscarTarefas( String status, String prioridade, Pageable pageable) {
+
+        Usuario usuario = usuarioService.buscarUsuarioLogado();
 
         if (status != null) {
-            List<Tarefa> tarefasPorStatus = new ArrayList<>();
-
             Status statusTarefa = Status.valueOf(status);
-            for (Tarefa tarefa : tarefaRepository.findAllByStatus(statusTarefa, pageable)) {
-
-                if (tarefa.getUsuario() == usuario.get()) {
-                    tarefasPorStatus.add(tarefa);
-                }
-            }
+            List<Tarefa> tarefasPorStatus = tarefaRepository.findAllByStatus(statusTarefa, pageable).stream()
+                    .filter(t -> t.getUsuario() == usuario).collect(Collectors.toList());
             return new PageImpl<>(tarefasPorStatus, pageable, tarefasPorStatus.size());
         }
-        if (prioridade != null) {
-            List<Tarefa> tarefasPorPrioridade = new ArrayList<>();
 
+        if (prioridade != null) {
             Prioridade prioridadeTarefa = Prioridade.valueOf(prioridade);
-            for (Tarefa tarefa : tarefaRepository.findAllByPrioridade(prioridadeTarefa, pageable)) {
-                if (tarefa.getUsuario() == usuario.get()) {
-                    tarefasPorPrioridade.add(tarefa);
-                }
-            }
+            List<Tarefa> tarefasPorPrioridade = tarefaRepository.findAllByPrioridade(prioridadeTarefa, pageable).stream()
+                    .filter(t -> t.getUsuario() == usuario).collect(Collectors.toList());
             return new PageImpl<>(tarefasPorPrioridade, pageable, tarefasPorPrioridade.size());
         }
 
-        return tarefaRepository.findAllByUsuario(usuario.get(), pageable);
+        return tarefaRepository.findAllByUsuario(usuario, pageable);
     }
 
     public Tarefa localizarTarefaPorId(Integer id) {
         Optional<Tarefa> tarefaOptional = tarefaRepository.findById(id);
         if (tarefaOptional.isPresent()) {
-            return (Tarefa) tarefaOptional.get();
+            return tarefaOptional.get();
         }
         throw new TarefaNaoExisteException("Tarefa não existe");
     }
 
-    public void alterarStatusTarefa(Integer tarefaId, String usuarioId, Status status) {
+    public void alterarDadosTarefa(Integer tarefaId, String titulo, String descricao, Status status) {
         Tarefa tarefa = localizarTarefaPorId(tarefaId);
 
-        if (tarefa.getUsuario() == buscarUsuario(usuarioId)) {
-            tarefa.setStatus(status);
-            salvarTarefa(tarefa);
-        } else {
-            throw new TarefaNaoExisteException("Tarefa não existe");
-        }
-    }
-
-    public void alterarDadosTarefa(Integer tarefaId, String usuarioId, String titulo, String descricao, Status status) {
-        Tarefa tarefa = localizarTarefaPorId(tarefaId);
-
-        if (tarefa.getUsuario() == buscarUsuario(usuarioId)) {
+        if (tarefa.getUsuario() == usuarioService.buscarUsuarioLogado()) {
             tarefa.setTitulo(titulo);
             tarefa.setDescricao(descricao);
             tarefa.setStatus(status);
@@ -110,17 +89,9 @@ public class TarefaService {
         }
     }
 
-    public Usuario buscarUsuario(String usuarioId) {
-        Optional<Usuario> usuario = usuarioRepository.findById(usuarioId);
-        if (usuario.isPresent()) {
-            return usuario.get();
-        }
-        throw new UsuarioNaoExisteException("Usuário não existe");
-    }
-
-    public void deletarTarefa(Integer tarefaId, String usuarioId) {
+    public void deletarTarefa(Integer tarefaId) {
         Tarefa tarefa = localizarTarefaPorId(tarefaId);
-        Usuario usuario = buscarUsuario(usuarioId);
+        Usuario usuario = usuarioService.buscarUsuarioLogado();
         if (tarefa.getUsuario() == usuario) {
             usuario.getTarefas().remove(tarefa);
             tarefaRepository.deleteById(tarefaId);
@@ -129,9 +100,9 @@ public class TarefaService {
         }
     }
 
-    public void salvarCSV(MultipartFile file, String usuarioId) {
+    public void salvarCSV(MultipartFile file) {
         try {
-            List<Tarefa> listaTarefas = importacaoCSV.salvarTarefasComUsuario(usuarioId, file.getInputStream());
+            List<Tarefa> listaTarefas = importacaoCSV.salvarTarefasComUsuario(file.getInputStream());
             tarefaRepository.saveAll(listaTarefas);
         } catch (IOException e) {
             throw new ErroAoLerArquivoException("Erro ao ler o arquivo: " + e.getMessage());
@@ -139,11 +110,7 @@ public class TarefaService {
     }
 
     public boolean validarSeArquivoCSV(MultipartFile file) {
-        if (importacaoCSV.verificarFormatoCSV(file)) {
-            return true;
-        }
-        return false;
+        return importacaoCSV.verificarFormatoCSV(file);
     }
-
 
 }
