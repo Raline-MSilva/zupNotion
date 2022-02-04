@@ -1,6 +1,7 @@
 package br.com.zup.ZupNotion.services;
 
 import br.com.zup.ZupNotion.config.security.JWT.UsuarioLogado;
+import br.com.zup.ZupNotion.exceptions.PerfilInvalidoException;
 import br.com.zup.ZupNotion.exceptions.UsuarioNaoExisteException;
 import br.com.zup.ZupNotion.models.Usuario;
 import br.com.zup.ZupNotion.repositories.UsuarioRepository;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -23,9 +25,16 @@ public class UsuarioService {
     public Usuario cadastrarUsuario(Usuario usuario, String role) {
         emailService.verificarEmailExistente(usuario.getEmail());
         emailService.validarEmailZup(usuario.getEmail());
+        verificarRole(role);
         usuario.setRole(role);
         usuario.setSenha(senhaService.criptografarSenha(usuario.getSenha()));
         return usuarioRepository.save(usuario);
+    }
+
+    public void verificarRole (String role){
+        if(!Objects.equals(role, "ROLE_ADMIN") && !Objects.equals(role, "ROLE_USER")){
+            throw new PerfilInvalidoException("Tipo de perfil inválido");
+        }
     }
 
     public String buscarIdUsuarioLogado() {
