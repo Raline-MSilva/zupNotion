@@ -23,6 +23,7 @@ public class UsuarioService {
     public Usuario cadastrarUsuario(Usuario usuario) {
         emailService.verificarEmailExistente(usuario.getEmail());
         emailService.validarEmailZup(usuario.getEmail());
+        usuario.setRole("ROLE_USER");
         usuario.setSenha(senhaService.criptografarSenha(usuario.getSenha()));
         return usuarioRepository.save(usuario);
     }

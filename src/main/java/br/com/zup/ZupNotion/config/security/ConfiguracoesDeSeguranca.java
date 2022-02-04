@@ -28,19 +28,30 @@ public class ConfiguracoesDeSeguranca extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserDetailsService userDetailsService;
 
+//    private static final String[] ENDPOINT = {
+//            "/tarefas/**",
+//            "/usuario/**"
+//    };
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
         http.cors().configurationSource(configurarCORS());
 
 
-        http.authorizeRequests().antMatchers(HttpMethod.POST, "/usuario").permitAll()
-                .antMatchers(HttpMethod.PATCH, "/usuario/esqueciSenha").permitAll().anyRequest()
+        http.authorizeRequests()
+                .antMatchers(HttpMethod.POST, "/tarefas/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.POST, "/usuario/**").permitAll()
+                .antMatchers(HttpMethod.PATCH, "/usuario/esqueciSenha").permitAll()
+                .antMatchers(HttpMethod.GET, "/tarefas/**").permitAll()
+                .antMatchers(HttpMethod.DELETE, "/tarefas/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.PATCH, "/tarefas/**").permitAll()
+                .anyRequest()
                 .authenticated();
-        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
-       http.addFilter(new FiltroDeAutenticacaoJWT(jwtComponent, authenticationManager()));
-       http.addFilter(new FiltroDeAutorizacaoJWT(authenticationManager(), jwtComponent, userDetailsService));
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        http.addFilter(new FiltroDeAutenticacaoJWT(jwtComponent, authenticationManager()));
+        http.addFilter(new FiltroDeAutorizacaoJWT(authenticationManager(), jwtComponent, userDetailsService));
     }
 
     @Override
@@ -49,7 +60,7 @@ public class ConfiguracoesDeSeguranca extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    CorsConfigurationSource configurarCORS(){
+    CorsConfigurationSource configurarCORS() {
         UrlBasedCorsConfigurationSource cors = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.addAllowedMethod("*");
@@ -60,7 +71,7 @@ public class ConfiguracoesDeSeguranca extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    BCryptPasswordEncoder bCryptPasswordEncoder(){
+    BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
