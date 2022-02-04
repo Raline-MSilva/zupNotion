@@ -49,6 +49,12 @@ public class ControllerAdvice {
         return new MensagemDeErro(exception.getMessage());
     }
 
+    @ExceptionHandler(PerfilInvalidoException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public MensagemDeErro tratarExcecaoPerfilInvalido(PerfilInvalidoException exception) {
+        return new MensagemDeErro(exception.getMessage());
+    }
+
     @ExceptionHandler(TarefaNaoExisteException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public MensagemDeErro tratarTarefaNaoExisteException(TarefaNaoExisteException exception){
