@@ -28,10 +28,10 @@ public class ConfiguracoesDeSeguranca extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserDetailsService userDetailsService;
 
-//    private static final String[] ENDPOINT = {
-//            "/tarefas/**",
-//            "/usuario/**"
-//    };
+    private static final String[] ENDPOINT = {
+            "/tarefas/**",
+            "/usuario/**"
+    };
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -44,7 +44,7 @@ public class ConfiguracoesDeSeguranca extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/usuario/**").permitAll()
                 .antMatchers(HttpMethod.PATCH, "/usuario/esqueciSenha").permitAll()
                 .antMatchers(HttpMethod.GET, "/tarefas/**").permitAll()
-                .antMatchers(HttpMethod.DELETE, "/tarefas/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.DELETE, ENDPOINT).hasRole("ADMIN")
                 .antMatchers(HttpMethod.PATCH, "/tarefas/**").permitAll()
                 .anyRequest()
                 .authenticated();

@@ -1,6 +1,7 @@
 package br.com.zup.ZupNotion.controllers;
 
 import br.com.zup.ZupNotion.models.Usuario;
+import br.com.zup.ZupNotion.models.dtos.DeletarUsuarioDTO;
 import br.com.zup.ZupNotion.services.SenhaService;
 import br.com.zup.ZupNotion.services.UsuarioService;
 import br.com.zup.ZupNotion.models.dtos.AlterarSenhaDTO;
@@ -37,4 +38,9 @@ public class UsuarioController {
         senhaService.alterarSenha(modelMapper.map(alterarSenhaDTO, Usuario.class));
     }
 
+    @DeleteMapping("/deletarUsuario")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deletarUsuario (@RequestBody @Valid DeletarUsuarioDTO deletarUsuarioDTO){
+        usuarioService.deletarUsuario(deletarUsuarioDTO.getEmail());
+    }
 }
