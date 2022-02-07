@@ -45,7 +45,8 @@ public class ConfiguracoesDeSeguranca extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.PATCH, "/usuario/esqueciSenha").permitAll()
                 .antMatchers(HttpMethod.GET, "/tarefas/**").permitAll()
                 .antMatchers(HttpMethod.DELETE, ENDPOINT).hasRole("ADMIN")
-                .antMatchers(HttpMethod.PATCH, "/tarefas/**").permitAll()
+                .antMatchers(HttpMethod.PATCH, "/tarefas/alterarStatus/**").hasRole("USER")
+                .antMatchers(HttpMethod.PATCH, "/tarefas/**").hasRole("ADMIN")
                 .anyRequest()
                 .authenticated();
 
