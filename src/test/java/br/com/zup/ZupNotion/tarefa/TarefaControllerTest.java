@@ -305,4 +305,64 @@ public class TarefaControllerTest {
 
     }
 
+    @Test
+    @WithMockUser(username = "admin", roles = {"USER", "ADMIN"})
+    public void testarBuscarTarefas() throws Exception {
+        ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.get("/tarefas")
+                        .param("size", "2")
+                        .param("page", "0")
+                        .param("status", "A_FAZER")
+                        .param("prioridade", "ALTA")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().is(200));
+
+        ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
+        Mockito.verify(tarefaService).buscarTarefas(Mockito.anyString(), Mockito.anyString(),
+                pageableCaptor.capture());
+        PageRequest pageable = (PageRequest) pageableCaptor.getValue();
+
+        Assertions.assertNotNull(pageable);
+        Assertions.assertEquals(pageable.getPageSize(), 2);
+        Assertions.assertEquals(pageable.getPageNumber(), 0);
+
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"USER", "ADMIN"})
+    public void testarBuscarTarefasPorStatus() throws Exception {
+        ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.get("/tarefas")
+                        .param("status", "A_FAZER")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().is(200));
+
+        ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
+        Mockito.verify(tarefaService).buscarTarefas(Mockito.anyString(), Mockito.anyString(),
+                pageableCaptor.capture());
+        PageRequest pageable = (PageRequest) pageableCaptor.getValue();
+
+        Assertions.assertNotNull(pageable);
+        Assertions.assertEquals(pageable.getPageSize(), 2);
+        Assertions.assertEquals(pageable.getPageNumber(), 0);
+
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"USER", "ADMIN"})
+    public void testarBuscarTarefasPorPrioridade() throws Exception {
+        ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.get("/tarefas")
+                        .param("prioridade", "ALTA")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().is(200));
+
+        ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
+        Mockito.verify(tarefaService).buscarTarefas(Mockito.anyString(), Mockito.anyString(),
+                pageableCaptor.capture());
+        PageRequest pageable = (PageRequest) pageableCaptor.getValue();
+
+        Assertions.assertNotNull(pageable);
+        Assertions.assertEquals(pageable.getPageSize(), 2);
+        Assertions.assertEquals(pageable.getPageNumber(), 0);
+
+    }
+
 }
