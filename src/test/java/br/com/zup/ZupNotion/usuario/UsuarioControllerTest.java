@@ -4,12 +4,16 @@ import br.com.zup.ZupNotion.components.Conversor;
 import br.com.zup.ZupNotion.config.security.JWT.JWTComponent;
 import br.com.zup.ZupNotion.config.security.JWT.UsuarioLoginService;
 import br.com.zup.ZupNotion.controllers.UsuarioController;
+import br.com.zup.ZupNotion.exceptions.UsuarioNaoExisteException;
 import br.com.zup.ZupNotion.models.Usuario;
 import br.com.zup.ZupNotion.models.dtos.AlterarSenhaDTO;
 import br.com.zup.ZupNotion.models.dtos.CadastroUsuarioDTO;
+import br.com.zup.ZupNotion.models.dtos.DeletarUsuarioDTO;
+import br.com.zup.ZupNotion.services.EmailService;
 import br.com.zup.ZupNotion.services.SenhaService;
 import br.com.zup.ZupNotion.services.UsuarioService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -39,6 +43,9 @@ public class UsuarioControllerTest {
     private UsuarioLoginService usuarioLoginService;
 
     @MockBean
+    private EmailService emailService;
+
+    @MockBean
     private JWTComponent jwtComponent;
 
     @Autowired
@@ -48,6 +55,7 @@ public class UsuarioControllerTest {
     private Usuario usuario;
     private CadastroUsuarioDTO cadastroUsuarioDTO;
     private AlterarSenhaDTO alterarSenhaDTO;
+    private DeletarUsuarioDTO deletarUsuarioDTO;
 
     @BeforeEach
     public void setup() {
@@ -68,6 +76,9 @@ public class UsuarioControllerTest {
         alterarSenhaDTO.setEmail("fulano@zup.com.br");
         alterarSenhaDTO.setSenha("AC@432ab");
 
+        deletarUsuarioDTO = new DeletarUsuarioDTO();
+        deletarUsuarioDTO.setEmail("fulano@zup.com.br");
+
     }
 
     private ResultActions realizarRequisicao(Object object, int statusEsperado, String httpVerbo, String complemento) throws Exception {
@@ -81,21 +92,21 @@ public class UsuarioControllerTest {
 
     @Test
     public void testarCadastroUsuario() throws Exception {
-        Mockito.when(usuarioService.cadastrarUsuario(Mockito.any(Usuario.class))).thenReturn(usuario);
+        Mockito.when(usuarioService.cadastrarUsuario(Mockito.any(), Mockito.anyString())).thenReturn(usuario);
         String json = objectMapper.writeValueAsString(cadastroUsuarioDTO);
 
-        ResultActions resultadoEsperado = realizarRequisicao(usuario, 201, "POST", "");
+        ResultActions resultadoEsperado = realizarRequisicao(usuario, 201, "POST", "/{role}");
         String jsonResposta = resultadoEsperado.andReturn().getResponse().getContentAsString();
     }
 
     @Test
     @WithMockUser("user@user.com")
     public void testarCadastroValidacaoUsuarioNomeEmBranco() throws Exception {
-        Mockito.when(usuarioService.cadastrarUsuario(Mockito.any(Usuario.class))).thenReturn(usuario);
+        Mockito.when(usuarioService.cadastrarUsuario(Mockito.any(), Mockito.anyString())).thenReturn(usuario);
         cadastroUsuarioDTO.setNome("    ");
         String json = objectMapper.writeValueAsString(cadastroUsuarioDTO);
 
-        ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.post("/usuario")
+        ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.post("/usuario" + "/ROLE_USER")
                         .contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(MockMvcResultMatchers.status().is(422));
 
@@ -104,11 +115,11 @@ public class UsuarioControllerTest {
     @Test
     @WithMockUser("user@user.com")
     public void testarCadastroValidacaoUsuarioEmailEmBranco() throws Exception {
-        Mockito.when(usuarioService.cadastrarUsuario(Mockito.any(Usuario.class))).thenReturn(usuario);
+        Mockito.when(usuarioService.cadastrarUsuario(Mockito.any(), Mockito.anyString())).thenReturn(usuario);
         cadastroUsuarioDTO.setEmail("    ");
         String json = objectMapper.writeValueAsString(cadastroUsuarioDTO);
 
-        ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.post("/usuario")
+        ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.post("/usuario" + "/ROLE_USER")
                         .contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(MockMvcResultMatchers.status().is(422));
 
@@ -117,11 +128,11 @@ public class UsuarioControllerTest {
     @Test
     @WithMockUser("user@user.com")
     public void testarCadastroValidacaoUsuarioSenhaEmBranco() throws Exception {
-        Mockito.when(usuarioService.cadastrarUsuario(Mockito.any(Usuario.class))).thenReturn(usuario);
+        Mockito.when(usuarioService.cadastrarUsuario(Mockito.any(), Mockito.anyString())).thenReturn(usuario);
         cadastroUsuarioDTO.setSenha("  ");
         String json = objectMapper.writeValueAsString(cadastroUsuarioDTO);
 
-        ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.post("/usuario")
+        ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.post("/usuario" + "/ROLE_USER")
                         .contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(MockMvcResultMatchers.status().is(422));
 
@@ -134,6 +145,26 @@ public class UsuarioControllerTest {
         String json = objectMapper.writeValueAsString(alterarSenhaDTO);
 
         ResultActions resultado = realizarRequisicao(usuario, 200, "PATCH", "/esqueciSenha");
+        String jsonResposta = resultado.andReturn().getResponse().getContentAsString();
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    public void testarDeletarUsuario() throws Exception {
+        Mockito.doNothing().when(usuarioService).deletarUsuario(Mockito.anyString());
+        String json = objectMapper.writeValueAsString(deletarUsuarioDTO);
+
+        Assertions.assertEquals(deletarUsuarioDTO.getEmail(), usuario.getEmail());
+        ResultActions resultado = realizarRequisicao(usuario, 204, "DELETE", "/deletarUsuario");
+        String jsonResposta = resultado.andReturn().getResponse().getContentAsString();
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    public void testarDeletarUsuarioNaoExiste() throws Exception {
+        Mockito.doThrow(UsuarioNaoExisteException.class).when(usuarioService).deletarUsuario(usuario.getEmail());
+
+        ResultActions resultado = realizarRequisicao(usuario, 404, "DELETE", "/deletarUsuario");
         String jsonResposta = resultado.andReturn().getResponse().getContentAsString();
     }
 
