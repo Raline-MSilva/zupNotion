@@ -17,15 +17,17 @@ import br.com.zup.ZupNotion.models.enums.Prioridade;
 import br.com.zup.ZupNotion.models.enums.Status;
 import br.com.zup.ZupNotion.services.TarefaService;
 import br.com.zup.ZupNotion.services.UsuarioService;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -69,6 +71,10 @@ public class TarefaControllerTest {
     private Usuario usuario;
     private AlterarStatusTarefaDTO alterarStatusTarefaDTO;
     private AlterarDadosTarefaDTO alterarDadosTarefaDTO;
+
+    public static final String DESCRICAO_SIZE = "Lorem ipsum dolor sit amet, consectetur adipisicing elit. " +
+            "Facilis enim eum ad nam temporibus et unde quidem quae quis, velit consectetur fugit nobis ducimus ipsum "
+            + "molestiae praesentium corporis magnam? Necessitatibus.";
 
 
     @BeforeEach
@@ -139,6 +145,54 @@ public class TarefaControllerTest {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void testarCadastrarTarefaValidacaoPrioridadeNulo() throws Exception {
         cadastroTarefaDTO.setPrioridade(null);
+        Mockito.when(tarefaService.cadastrarTarefa(Mockito.any(), Mockito.anyString())).thenReturn(tarefa);
+        String json = objectMapper.writeValueAsString(cadastroTarefaDTO);
+
+        ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.post("/tarefas")
+                        .content(json).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().is(422));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    public void testarCadastrarTarefaValidacaoTamanhoMaximoDaDescricao() throws Exception {
+        cadastroTarefaDTO.setDescricao(DESCRICAO_SIZE);
+        Mockito.when(tarefaService.cadastrarTarefa(Mockito.any(), Mockito.anyString())).thenReturn(tarefa);
+        String json = objectMapper.writeValueAsString(cadastroTarefaDTO);
+
+        ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.post("/tarefas")
+                        .content(json).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().is(422));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    public void testarCadastrarTarefaValidacaoTamanhoMinimoDaDescricao() throws Exception {
+        cadastroTarefaDTO.setDescricao("te");
+        Mockito.when(tarefaService.cadastrarTarefa(Mockito.any(), Mockito.anyString())).thenReturn(tarefa);
+        String json = objectMapper.writeValueAsString(cadastroTarefaDTO);
+
+        ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.post("/tarefas")
+                        .content(json).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().is(422));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    public void testarCadastrarTarefaValidacaoTamanhoMaximoDoTitulo() throws Exception {
+        cadastroTarefaDTO.setTitulo(DESCRICAO_SIZE);
+        Mockito.when(tarefaService.cadastrarTarefa(Mockito.any(), Mockito.anyString())).thenReturn(tarefa);
+        String json = objectMapper.writeValueAsString(cadastroTarefaDTO);
+
+        ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.post("/tarefas")
+                        .content(json).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().is(422));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    public void testarCadastrarTarefaValidacaoTamanhoMinimoDoTitulo() throws Exception {
+        cadastroTarefaDTO.setTitulo("ti");
         Mockito.when(tarefaService.cadastrarTarefa(Mockito.any(), Mockito.anyString())).thenReturn(tarefa);
         String json = objectMapper.writeValueAsString(cadastroTarefaDTO);
 
