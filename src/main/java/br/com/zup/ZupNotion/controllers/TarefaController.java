@@ -3,10 +3,7 @@ package br.com.zup.ZupNotion.controllers;
 import br.com.zup.ZupNotion.config.ResponseMessage;
 import br.com.zup.ZupNotion.models.Tarefa;
 import br.com.zup.ZupNotion.components.TarefaImportacaoCSV;
-import br.com.zup.ZupNotion.models.dtos.AlterarDadosTarefaDTO;
-import br.com.zup.ZupNotion.models.dtos.CadastroTarefaDTO;
-import br.com.zup.ZupNotion.models.dtos.RespostaTarefaDTO;
-import br.com.zup.ZupNotion.models.dtos.TarefaResumoDTO;
+import br.com.zup.ZupNotion.models.dtos.*;
 import br.com.zup.ZupNotion.services.TarefaService;
 import br.com.zup.ZupNotion.services.UsuarioService;
 import org.modelmapper.ModelMapper;
@@ -67,7 +64,13 @@ public class TarefaController {
     public void alterarTarefaPorId(@RequestBody @Valid AlterarDadosTarefaDTO alterarDadosTarefaDTO,
                                    @PathVariable Integer id) {
         tarefaService.alterarDadosTarefa(id, alterarDadosTarefaDTO.getTitulo(),
-                alterarDadosTarefaDTO.getDescricao(), alterarDadosTarefaDTO.getStatus());
+                alterarDadosTarefaDTO.getDescricao());
+    }
+
+    @PatchMapping("/alterarStatus/{id}")
+    public void alterarStatusTarefa(@RequestBody @Valid AlterarStatusTarefaDTO alterarStatusTarefaDTO,
+                                    @PathVariable Integer id) {
+        tarefaService.alterarStatusTarefa(id, alterarStatusTarefaDTO.getStatus());
     }
 
     @PostMapping("/arquivosCSV")
