@@ -1,13 +1,14 @@
 package br.com.zup.ZupNotion.models.dtos;
 
-import br.com.zup.ZupNotion.models.enums.Status;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 @Data
 public class AlterarDadosTarefaDTO {
-    private Status status;
+    @Size(min = 3, max = 50, message = "{validacao.titulo-size}")
+    @NotBlank
     private String titulo;
     @Size(min = 3, max = 100, message = "{validacao.descricao-size}")
     private String descricao;

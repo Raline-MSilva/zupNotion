@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -53,21 +54,25 @@ public class TarefaService {
 
         Usuario usuario = usuarioService.buscarUsuarioLogado();
 
-        if (status != null) {
-            Status statusTarefa = Status.valueOf(status);
-            List<Tarefa> tarefasPorStatus = tarefaRepository.findAllByStatus(statusTarefa, pageable).stream()
-                    .filter(t -> t.getUsuario() == usuario).collect(Collectors.toList());
-            return new PageImpl<>(tarefasPorStatus, pageable, tarefasPorStatus.size());
-        }
+        if (Objects.equals(usuario.getRole(), "ROLE_ADMIN")) {
+            return tarefaRepository.findAll(pageable);
+        } else {
+            if (status != null) {
+                Status statusTarefa = Status.valueOf(status);
+                List<Tarefa> tarefasPorStatus = tarefaRepository.findAllByStatus(statusTarefa, pageable).stream()
+                        .filter(t -> t.getUsuario() == usuario).collect(Collectors.toList());
+                return new PageImpl<>(tarefasPorStatus, pageable, tarefasPorStatus.size());
+            }
 
-        if (prioridade != null) {
-            Prioridade prioridadeTarefa = Prioridade.valueOf(prioridade);
-            List<Tarefa> tarefasPorPrioridade = tarefaRepository.findAllByPrioridade(prioridadeTarefa, pageable).stream()
-                    .filter(t -> t.getUsuario() == usuario).collect(Collectors.toList());
-            return new PageImpl<>(tarefasPorPrioridade, pageable, tarefasPorPrioridade.size());
-        }
+            if (prioridade != null) {
+                Prioridade prioridadeTarefa = Prioridade.valueOf(prioridade);
+                List<Tarefa> tarefasPorPrioridade = tarefaRepository.findAllByPrioridade(prioridadeTarefa, pageable).stream()
+                        .filter(t -> t.getUsuario() == usuario).collect(Collectors.toList());
+                return new PageImpl<>(tarefasPorPrioridade, pageable, tarefasPorPrioridade.size());
+            }
 
-        return tarefaRepository.findAllByUsuario(usuario, pageable);
+            return tarefaRepository.findAllByUsuario(usuario, pageable);
+        }
     }
 
     public Tarefa localizarTarefaPorId(Integer id) {
@@ -78,12 +83,22 @@ public class TarefaService {
         throw new TarefaNaoExisteException("Tarefa não existe");
     }
 
-    public void alterarDadosTarefa(Integer tarefaId, String titulo, String descricao, Status status) {
+    public void alterarDadosTarefa(Integer tarefaId, String titulo, String descricao) {
+        Tarefa tarefa = localizarTarefaPorId(tarefaId);
+
+        if (tarefa != null) {
+            tarefa.setTitulo(titulo);
+            tarefa.setDescricao(descricao);
+            salvarTarefa(tarefa);
+        } else {
+            throw new TarefaNaoExisteException("Tarefa não existe");
+        }
+    }
+
+    public void alterarStatusTarefa(Integer tarefaId, Status status) {
         Tarefa tarefa = localizarTarefaPorId(tarefaId);
 
         if (tarefa.getUsuario() == usuarioService.buscarUsuarioLogado()) {
-            tarefa.setTitulo(titulo);
-            tarefa.setDescricao(descricao);
             tarefa.setStatus(status);
             salvarTarefa(tarefa);
         } else {
