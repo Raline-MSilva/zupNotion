@@ -45,8 +45,7 @@ public class TarefaController {
     @GetMapping
     public Page<TarefaResumoDTO> buscarTarefas(@RequestParam(required = false) String status,
                                                @RequestParam(required = false) String prioridade,
-                                               @PageableDefault(size = 2, sort = "prioridade",
-                                                       direction = Sort.Direction.ASC) Pageable pageable) {
+                                               Pageable pageable) {
 
         List<TarefaResumoDTO> tarefas = tarefaService.buscarTarefas(status, prioridade, pageable).stream()
                 .map(tarefa -> modelMapper.map(tarefa, TarefaResumoDTO.class)).collect(Collectors.toList());
