@@ -44,7 +44,7 @@ public class ControllerAdvice {
     }
 
     @ExceptionHandler(UsuarioNaoExisteException.class)
-    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public MensagemDeErro tratarExcecaoUsuarioNaoExisteException(UsuarioNaoExisteException exception){
         return new MensagemDeErro(exception.getMessage());
     }
