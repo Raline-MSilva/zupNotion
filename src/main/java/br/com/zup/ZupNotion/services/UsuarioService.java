@@ -4,6 +4,7 @@ import br.com.zup.ZupNotion.config.security.JWT.UsuarioLogado;
 import br.com.zup.ZupNotion.exceptions.PerfilInvalidoException;
 import br.com.zup.ZupNotion.exceptions.UsuarioNaoExisteException;
 import br.com.zup.ZupNotion.models.Usuario;
+import br.com.zup.ZupNotion.models.enums.Role;
 import br.com.zup.ZupNotion.repositories.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,13 +23,23 @@ public class UsuarioService {
     @Autowired
     private SenhaService senhaService;
 
-    public Usuario cadastrarUsuario(Usuario usuario, String role) {
+    public Usuario cadastrarUsuario(Usuario usuario) {
         emailService.verificarEmailExistente(usuario.getEmail());
         emailService.validarEmailZup(usuario.getEmail());
-        verificarRole(role);
-        usuario.setRole(role);
+        usuario.setRole(Role.ROLE_USER);
         usuario.setSenha(senhaService.criptografarSenha(usuario.getSenha()));
         return usuarioRepository.save(usuario);
+    }
+
+    public Usuario cadastrarAdmin(Usuario usuario) {
+        if (buscarUsuarioLogado().getRole() == Role.ROLE_ADMIN) {
+            emailService.verificarEmailExistente(usuario.getEmail());
+            emailService.validarEmailZup(usuario.getEmail());
+            usuario.setRole(Role.ROLE_ADMIN);
+            usuario.setSenha(senhaService.criptografarSenha(usuario.getSenha()));
+            return usuarioRepository.save(usuario);
+        }
+        throw new PerfilInvalidoException("Tipo de perfil inválido");
     }
 
     public void verificarRole(String role) {
