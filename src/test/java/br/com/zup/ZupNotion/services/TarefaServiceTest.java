@@ -4,6 +4,7 @@ import br.com.zup.ZupNotion.exceptions.TarefaNaoExisteException;
 import br.com.zup.ZupNotion.models.Tarefa;
 import br.com.zup.ZupNotion.models.Usuario;
 import br.com.zup.ZupNotion.models.enums.Prioridade;
+import br.com.zup.ZupNotion.models.enums.Status;
 import br.com.zup.ZupNotion.repositories.TarefaRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -29,12 +32,15 @@ public class TarefaServiceTest {
     @Autowired
     private TarefaService tarefaService;
 
+    @MockBean
+    private EmailService emailService;
+
     private Tarefa tarefa;
     private Usuario usuario;
     private Usuario usuario2;
 
     @BeforeEach
-    public void setup(){
+    public void setup() {
         tarefa = new Tarefa();
         tarefa.setId(1);
         tarefa.setTitulo("Testar");
@@ -44,6 +50,7 @@ public class TarefaServiceTest {
         usuario = new Usuario();
         usuario.setNome("ana");
         tarefa.setUsuario(usuario);
+        usuario.setEmail("ar@zup.com.br");
 
         List<Tarefa> tarefas = new ArrayList<>();
         usuario.setTarefas(tarefas);
@@ -51,10 +58,23 @@ public class TarefaServiceTest {
 
         usuario2 = new Usuario();
         usuario2.setNome("lia");
+
     }
 
     @Test
-    public void testarDeletarTarefaSucesso(){
+    public void testarCadastrarTarefa() {
+        Mockito.when(emailService.localizarUsuarioPorEmail(usuario.getEmail())).thenReturn(usuario);
+        tarefaService.cadastrarTarefa(tarefa, usuario.getEmail());
+        Assertions.assertEquals(tarefa.getStatus(), Status.A_FAZER);
+        Assertions.assertEquals(tarefa.getDataDeCadastro().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")),
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")));
+        Assertions.assertEquals(tarefa.getUsuario(), usuario);
+        Assertions.assertEquals(usuario.getTarefas(), tarefa.getUsuario().getTarefas());
+
+    }
+
+    @Test
+    public void testarDeletarTarefaSucesso() {
         Mockito.when(usuarioService.buscarUsuarioLogado()).thenReturn(usuario);
         Mockito.when(tarefaRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(tarefa));
         Mockito.doNothing().when(tarefaRepository).deleteById(Mockito.anyInt());
@@ -65,7 +85,7 @@ public class TarefaServiceTest {
     }
 
     @Test
-    public void testarDeletarTarefaCaminhoNegativo(){
+    public void testarDeletarTarefaCaminhoNegativo() {
         Mockito.when(usuarioService.buscarUsuarioLogado()).thenReturn(usuario2);
         Mockito.when(tarefaRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(tarefa));
         Mockito.doNothing().when(tarefaRepository).deleteById(Mockito.anyInt());
@@ -76,23 +96,23 @@ public class TarefaServiceTest {
     }
 
     @Test
-    public void testarLocalizarTarefaPorId(){
+    public void testarLocalizarTarefaPorId() {
         Mockito.when(tarefaRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(tarefa));
         Tarefa tarefaResposta = tarefaService.localizarTarefaPorId(Mockito.anyInt());
 
         Assertions.assertNotNull(tarefaResposta);
-        Assertions.assertEquals(Tarefa.class,tarefaResposta.getClass());
-        Assertions.assertEquals(tarefa.getId(),tarefaResposta.getId());
+        Assertions.assertEquals(Tarefa.class, tarefaResposta.getClass());
+        Assertions.assertEquals(tarefa.getId(), tarefaResposta.getId());
 
         Mockito.verify(tarefaRepository, Mockito.times(1)).findById(Mockito.anyInt());
     }
 
     @Test
-    public void testarLocalizarTarefaPorIdNaoEncontrado(){
+    public void testarLocalizarTarefaPorIdNaoEncontrado() {
         Mockito.when(tarefaRepository.save(Mockito.any())).thenReturn(tarefa);
         Mockito.when(tarefaRepository.findById(Mockito.anyInt())).thenReturn(Optional.empty());
 
-        TarefaNaoExisteException exception = Assertions.assertThrows(TarefaNaoExisteException.class, () ->{
+        TarefaNaoExisteException exception = Assertions.assertThrows(TarefaNaoExisteException.class, () -> {
             tarefaService.localizarTarefaPorId(0);
         });
 
