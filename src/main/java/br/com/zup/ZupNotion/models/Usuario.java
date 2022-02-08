@@ -1,5 +1,6 @@
 package br.com.zup.ZupNotion.models;
 
+import br.com.zup.ZupNotion.models.enums.Role;
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -23,6 +24,7 @@ public class Usuario {
     private String senha;
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     private List<Tarefa> tarefas;
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
 }

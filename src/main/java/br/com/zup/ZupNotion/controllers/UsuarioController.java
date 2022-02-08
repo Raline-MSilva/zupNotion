@@ -24,12 +24,18 @@ public class UsuarioController {
     @Autowired
     private ModelMapper modelMapper;
 
-    @PostMapping("/{role}")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void cadastrarUsuario(@RequestBody @Valid CadastroUsuarioDTO cadastroUsuarioDTO,
-                                 @PathVariable String role) {
+    public void cadastrarUsuario(@RequestBody @Valid CadastroUsuarioDTO cadastroUsuarioDTO) {
         Usuario usuario = modelMapper.map(cadastroUsuarioDTO, Usuario.class);
-        usuarioService.cadastrarUsuario(usuario, role);
+        usuarioService.cadastrarUsuario(usuario);
+    }
+
+    @PostMapping("/cadastraradmin")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void cadastrarAdmin(@RequestBody @Valid CadastroUsuarioDTO cadastroUsuarioDTO) {
+        Usuario usuario = modelMapper.map(cadastroUsuarioDTO, Usuario.class);
+        usuarioService.cadastrarAdmin(usuario);
     }
 
     @PatchMapping("/esqueciSenha")
