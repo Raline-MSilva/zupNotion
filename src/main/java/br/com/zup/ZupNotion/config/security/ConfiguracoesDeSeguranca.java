@@ -48,8 +48,10 @@ public class ConfiguracoesDeSeguranca extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.DELETE, ENDPOINT).hasRole("ADMIN")
                 .antMatchers(HttpMethod.PATCH, "/tarefas/alterarStatus/**").hasRole("USER")
                 .antMatchers(HttpMethod.PATCH, "/tarefas/**").hasRole("ADMIN")
-                .anyRequest()
-                .authenticated();
+                .antMatchers("/v2/api-docs", "/swagger-resources/configuration/ui", "/swagger-resources",
+                        "/swagger-resources/configuration/security", "/swagger-ui/**", "/webjars/**").permitAll()
+                .and().authorizeRequests()
+                .anyRequest().authenticated();
 
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.addFilter(new FiltroDeAutenticacaoJWT(jwtComponent, authenticationManager()));
@@ -61,7 +63,7 @@ public class ConfiguracoesDeSeguranca extends WebSecurityConfigurerAdapter {
         auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder());
     }
 
-    @Bean
+    /*@Bean
     CorsConfigurationSource configurarCORS() {
         UrlBasedCorsConfigurationSource cors = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
@@ -69,6 +71,13 @@ public class ConfiguracoesDeSeguranca extends WebSecurityConfigurerAdapter {
         config.addAllowedOrigin("*");
         config.addAllowedHeader("*");
         cors.registerCorsConfiguration("/**", config);
+        return cors;
+    }*/
+
+    @Bean
+    CorsConfigurationSource configurarCORS() {
+        UrlBasedCorsConfigurationSource cors = new UrlBasedCorsConfigurationSource();
+        cors.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
         return cors;
     }
 
