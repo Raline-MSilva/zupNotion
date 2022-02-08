@@ -12,7 +12,6 @@ import br.com.zup.ZupNotion.models.dtos.AlterarDadosTarefaDTO;
 import br.com.zup.ZupNotion.models.dtos.AlterarStatusTarefaDTO;
 import br.com.zup.ZupNotion.models.dtos.CadastroTarefaDTO;
 import br.com.zup.ZupNotion.models.dtos.RespostaTarefaDTO;
-import br.com.zup.ZupNotion.models.dtos.TarefaResumoDTO;
 import br.com.zup.ZupNotion.models.enums.Prioridade;
 import br.com.zup.ZupNotion.models.enums.Status;
 import br.com.zup.ZupNotion.services.TarefaService;
@@ -26,8 +25,11 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -37,6 +39,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.function.Function;
 
 @WebMvcTest({TarefaController.class, Conversor.class, UsuarioLoginService.class, JWTComponent.class})
 
@@ -51,13 +57,11 @@ public class TarefaControllerTest {
     private JWTComponent jwtComponent;
 
     @MockBean
-    private TarefaResumoDTO tarefaResumoDTO;
-
-    @MockBean
     private TarefaImportacaoCSV tarefaImportacaoCSV;
 
     @MockBean
     private UsuarioService usuarioService;
+
 
 
 
@@ -71,6 +75,8 @@ public class TarefaControllerTest {
     private Usuario usuario;
     private AlterarStatusTarefaDTO alterarStatusTarefaDTO;
     private AlterarDadosTarefaDTO alterarDadosTarefaDTO;
+    private Page<Tarefa> pageTarefa;
+    private Pageable pageable;
 
     public static final String DESCRICAO_SIZE = "Lorem ipsum dolor sit amet, consectetur adipisicing elit. " +
             "Facilis enim eum ad nam temporibus et unde quidem quae quis, velit consectetur fugit nobis ducimus ipsum "
@@ -112,6 +118,14 @@ public class TarefaControllerTest {
         alterarDadosTarefaDTO = new AlterarDadosTarefaDTO();
         alterarDadosTarefaDTO.setTitulo("novo titulo");
         alterarDadosTarefaDTO.setDescricao("nova descricao");
+
+        List<Tarefa> tarefas = new ArrayList<>();
+        tarefas.add(tarefa);
+
+        pageable =  PageRequest.of(0, tarefas.size());
+
+        pageTarefa = new PageImpl(tarefas, pageable, tarefas.size());
+
 
     }
 
@@ -306,24 +320,23 @@ public class TarefaControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "admin", roles = {"USER", "ADMIN"})
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void testarBuscarTarefas() throws Exception {
+        ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
+        Mockito.when(tarefaService.buscarTarefas(Mockito.anyString(),Mockito.anyString(), pageableCaptor.capture())).thenReturn(pageTarefa);
         ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.get("/tarefas")
                         .param("size", "2")
-                        .param("page", "0")
-                        .param("status", "A_FAZER")
-                        .param("prioridade", "ALTA")
+                        .param("page", "0").header("Authorization", "xablau")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().is(200));
 
-        ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
-        Mockito.verify(tarefaService).buscarTarefas(Mockito.anyString(), Mockito.anyString(),
-                pageableCaptor.capture());
-        PageRequest pageable = (PageRequest) pageableCaptor.getValue();
 
+        PageRequest pageable = (PageRequest) pageableCaptor.getValue();
         Assertions.assertNotNull(pageable);
         Assertions.assertEquals(pageable.getPageSize(), 2);
         Assertions.assertEquals(pageable.getPageNumber(), 0);
+        Mockito.verify(tarefaService).buscarTarefas(Mockito.anyString(), Mockito.anyString(),
+                pageableCaptor.capture());
 
     }
 
@@ -331,7 +344,7 @@ public class TarefaControllerTest {
     @WithMockUser(username = "admin", roles = {"USER", "ADMIN"})
     public void testarBuscarTarefasPorStatus() throws Exception {
         ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.get("/tarefas")
-                        .param("status", "A_FAZER")
+                        .param("status", "CONCLUIDA")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().is(200));
 
