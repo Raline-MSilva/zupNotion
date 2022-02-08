@@ -92,21 +92,30 @@ public class UsuarioControllerTest {
 
     @Test
     public void testarCadastroUsuario() throws Exception {
-        Mockito.when(usuarioService.cadastrarUsuario(Mockito.any(), Mockito.anyString())).thenReturn(usuario);
+        Mockito.when(usuarioService.cadastrarUsuario(Mockito.any())).thenReturn(usuario);
         String json = objectMapper.writeValueAsString(cadastroUsuarioDTO);
 
-        ResultActions resultadoEsperado = realizarRequisicao(usuario, 201, "POST", "/{role}");
+        ResultActions resultadoEsperado = realizarRequisicao(usuario, 201, "POST", "");
+        String jsonResposta = resultadoEsperado.andReturn().getResponse().getContentAsString();
+    }
+
+    @Test
+    public void testarCadastroAdmin() throws Exception {
+        Mockito.when(usuarioService.cadastrarAdmin(Mockito.any())).thenReturn(usuario);
+        String json = objectMapper.writeValueAsString(cadastroUsuarioDTO);
+
+        ResultActions resultadoEsperado = realizarRequisicao(usuario, 201, "POST", "/cadastraradmin");
         String jsonResposta = resultadoEsperado.andReturn().getResponse().getContentAsString();
     }
 
     @Test
     @WithMockUser("user@user.com")
     public void testarCadastroValidacaoUsuarioNomeEmBranco() throws Exception {
-        Mockito.when(usuarioService.cadastrarUsuario(Mockito.any(), Mockito.anyString())).thenReturn(usuario);
+        Mockito.when(usuarioService.cadastrarUsuario(Mockito.any())).thenReturn(usuario);
         cadastroUsuarioDTO.setNome("    ");
         String json = objectMapper.writeValueAsString(cadastroUsuarioDTO);
 
-        ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.post("/usuario" + "/ROLE_USER")
+        ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.post("/usuario" + "")
                         .contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(MockMvcResultMatchers.status().is(422));
 
@@ -115,11 +124,11 @@ public class UsuarioControllerTest {
     @Test
     @WithMockUser("user@user.com")
     public void testarCadastroValidacaoUsuarioEmailEmBranco() throws Exception {
-        Mockito.when(usuarioService.cadastrarUsuario(Mockito.any(), Mockito.anyString())).thenReturn(usuario);
+        Mockito.when(usuarioService.cadastrarUsuario(Mockito.any())).thenReturn(usuario);
         cadastroUsuarioDTO.setEmail("    ");
         String json = objectMapper.writeValueAsString(cadastroUsuarioDTO);
 
-        ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.post("/usuario" + "/ROLE_USER")
+        ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.post("/usuario" + "")
                         .contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(MockMvcResultMatchers.status().is(422));
 
@@ -128,11 +137,11 @@ public class UsuarioControllerTest {
     @Test
     @WithMockUser("user@user.com")
     public void testarCadastroValidacaoUsuarioSenhaEmBranco() throws Exception {
-        Mockito.when(usuarioService.cadastrarUsuario(Mockito.any(), Mockito.anyString())).thenReturn(usuario);
+        Mockito.when(usuarioService.cadastrarUsuario(Mockito.any())).thenReturn(usuario);
         cadastroUsuarioDTO.setSenha("  ");
         String json = objectMapper.writeValueAsString(cadastroUsuarioDTO);
 
-        ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.post("/usuario" + "/ROLE_USER")
+        ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.post("/usuario" + "")
                         .contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(MockMvcResultMatchers.status().is(422));
 
