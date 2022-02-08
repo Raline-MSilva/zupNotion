@@ -42,6 +42,7 @@ public class ConfiguracoesDeSeguranca extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/tarefas/**").hasRole("ADMIN")
                 .antMatchers(HttpMethod.POST, "/usuario/**").permitAll()
+                .antMatchers(HttpMethod.POST, "/usuario/cadastraradmin/**").hasRole("ADMIN")
                 .antMatchers(HttpMethod.PATCH, "/usuario/esqueciSenha").permitAll()
                 .antMatchers(HttpMethod.GET, "/tarefas/**").permitAll()
                 .antMatchers(HttpMethod.DELETE, ENDPOINT).hasRole("ADMIN")
