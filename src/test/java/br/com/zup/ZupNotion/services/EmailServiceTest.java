@@ -78,5 +78,13 @@ public class EmailServiceTest {
         Mockito.verify(usuarioRepository, Mockito.times(1)).findByEmail(Mockito.anyString());
     }
 
+    @Test
+    public void testarUsuarioNaoLocalizadoPorEmail(){
+        Mockito.when(usuarioRepository.findByEmail(Mockito.anyString())).thenReturn(Optional.empty());
+        UsuarioNaoExisteException exception = Assertions.assertThrows(UsuarioNaoExisteException.class, () -> {
+            emailService.localizarUsuarioPorEmail(usuario.getEmail());
+        });
+        Assertions.assertEquals("Usuário não existe", exception.getMessage());
+    }
 
 }
