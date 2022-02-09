@@ -117,6 +117,18 @@ public class TarefaService {
         }
     }
 
+    public void atribuirTarefa(Integer tarefaId, String email) {
+        Tarefa tarefa = localizarTarefaPorId(tarefaId);
+        Usuario usuario = emailService.localizarUsuarioPorEmail(email);
+
+        if (tarefa.getUsuario() == usuarioService.buscarUsuarioLogado()) {
+            tarefa.setUsuario(usuario);
+            salvarTarefa(tarefa);
+        } else {
+            throw new TarefaNaoExisteException("Tarefa não existe");
+        }
+    }
+
     public void salvarCSV(MultipartFile file) {
         try {
             List<Tarefa> listaTarefas = importacaoCSV.salvarTarefasComUsuario(file.getInputStream());
