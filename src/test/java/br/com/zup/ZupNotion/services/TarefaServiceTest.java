@@ -85,7 +85,7 @@ public class TarefaServiceTest {
     }
 
     @Test
-    public void testarAlterarDadosDaTarefaCaminhoPositivo(){
+    public void testarAlterarDadosDaTarefaCaminhoPositivo() {
         Mockito.when(tarefaRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(tarefa));
         Mockito.when(tarefaService.salvarTarefa(Mockito.any())).thenReturn(tarefa);
         testarLocalizarTarefaPorId();
@@ -98,7 +98,7 @@ public class TarefaServiceTest {
     }
 
     @Test
-    public void testarAlterarDdosDaTarefaCaminhoNegativo(){
+    public void testarAlterarDdosDaTarefaCaminhoNegativo() {
         Mockito.when(tarefaRepository.findById(Mockito.anyInt())).thenReturn(Optional.empty());
         Mockito.when(tarefaService.salvarTarefa(Mockito.any())).thenReturn(tarefa);
 
@@ -111,7 +111,7 @@ public class TarefaServiceTest {
     }
 
     @Test
-    public void testarAlterarStatusDaTarefaCaminhoPositivo(){
+    public void testarAlterarStatusDaTarefaCaminhoPositivo() {
         Mockito.when(tarefaRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(tarefa));
         Mockito.when(usuarioService.buscarUsuarioLogado()).thenReturn(usuario);
         testarLocalizarTarefaPorId();
@@ -123,7 +123,7 @@ public class TarefaServiceTest {
     }
 
     @Test
-    public void testarAlterarStatusDaTarefaCaminhoNegativo(){
+    public void testarAlterarStatusDaTarefaCaminhoNegativo() {
         Mockito.when(tarefaRepository.findById(Mockito.anyInt())).thenReturn(Optional.empty());
         Mockito.when(usuarioService.buscarUsuarioLogado()).thenReturn(usuario);
 
@@ -202,7 +202,6 @@ public class TarefaServiceTest {
         tarefaService.buscarTarefas(String.valueOf(tarefa.getStatus()), String.valueOf(tarefa.getPrioridade()), pageable);
 
 
-
         Mockito.verify(tarefaRepository, Mockito.times(1)).findAll(pageable);
         Mockito.verify(tarefaRepository, Mockito.times(0)).findAllByStatus(tarefa.getStatus(), pageable);
         Mockito.verify(tarefaRepository, Mockito.times(0)).findAllByPrioridade(tarefa.getPrioridade(), pageable);
@@ -220,6 +219,21 @@ public class TarefaServiceTest {
         Mockito.verify(tarefaRepository, Mockito.times(0)).findAll(pageable);
         Mockito.verify(tarefaRepository, Mockito.times(1)).findAllByStatus(tarefa.getStatus(), pageable);
         Mockito.verify(tarefaRepository, Mockito.times(0)).findAllByPrioridade(tarefa.getPrioridade(), pageable);
+    }
+
+    @Test
+    public void testarBuscarTarefasPorPrioridade() {
+        Mockito.when(usuarioService.buscarUsuarioLogado()).thenReturn(usuario);
+        usuario.setRole("ROLE_USER");
+        String tarefaNull = null;
+        tarefa.setPrioridade(Prioridade.BAIXA);
+        Mockito.when(tarefaRepository.findAllByPrioridade(tarefa.getPrioridade(), pageable)).thenReturn(pageTarefas);
+        tarefaService.buscarTarefas(tarefaNull, String.valueOf(tarefa.getPrioridade()), pageable);
+
+        Mockito.verify(tarefaRepository, Mockito.times(0)).findAll(pageable);
+        Mockito.verify(tarefaRepository, Mockito.times(0)).findAllByStatus(tarefa.getStatus(), pageable);
+        Mockito.verify(tarefaRepository, Mockito.times(1)).findAllByPrioridade(tarefa.getPrioridade(), pageable);
+
     }
 
 }
