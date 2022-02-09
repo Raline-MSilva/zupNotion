@@ -113,6 +113,20 @@ public class TarefaServiceTest {
     }
 
     @Test
+    public void testarAlterarStatusDaTarefaCaminhoNegativo(){
+        Mockito.when(tarefaRepository.findById(Mockito.anyInt())).thenReturn(Optional.empty());
+        Mockito.when(usuarioService.buscarUsuarioLogado()).thenReturn(usuario);
+
+        TarefaNaoExisteException exception = Assertions.assertThrows(TarefaNaoExisteException.class, () -> {
+            tarefaService.alterarDadosTarefa(tarefa.getId(), tarefa.getTitulo(), tarefa.getDescricao());
+        });
+
+        Assertions.assertEquals("Tarefa não existe", exception.getMessage());
+        Mockito.verify(tarefaRepository, Mockito.times(1)).findById(tarefa.getId());
+
+    }
+
+    @Test
     public void testarDeletarTarefaSucesso() {
         Mockito.when(usuarioService.buscarUsuarioLogado()).thenReturn(usuario);
         Mockito.when(tarefaRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(tarefa));
