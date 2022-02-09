@@ -101,6 +101,18 @@ public class TarefaServiceTest {
     }
 
     @Test
+    public void testarAlterarStatusDaTarefaCaminhoPositivo(){
+        Mockito.when(tarefaRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(tarefa));
+        Mockito.when(usuarioService.buscarUsuarioLogado()).thenReturn(usuario);
+        testarLocalizarTarefaPorId();
+
+        tarefa.setStatus(Status.EM_ANDAMENTO);
+        tarefaService.alterarStatusTarefa(tarefa.getId(), tarefa.getStatus());
+        Mockito.verify(tarefaRepository, Mockito.times(1)).findById(tarefa.getId());
+
+    }
+
+    @Test
     public void testarDeletarTarefaSucesso() {
         Mockito.when(usuarioService.buscarUsuarioLogado()).thenReturn(usuario);
         Mockito.when(tarefaRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(tarefa));
