@@ -3,10 +3,13 @@ package br.com.zup.ZupNotion.services;
 import br.com.zup.ZupNotion.config.security.JWT.UsuarioLogado;
 import br.com.zup.ZupNotion.exceptions.PerfilInvalidoException;
 import br.com.zup.ZupNotion.exceptions.UsuarioNaoExisteException;
+import br.com.zup.ZupNotion.models.Tarefa;
 import br.com.zup.ZupNotion.models.Usuario;
 import br.com.zup.ZupNotion.models.enums.Role;
 import br.com.zup.ZupNotion.repositories.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -65,6 +68,14 @@ public class UsuarioService {
     public void deletarUsuario(String email) {
         Usuario usuario = emailService.localizarUsuarioPorEmail(email);
         usuarioRepository.delete(usuario);
+    }
+
+    public Page<Usuario> buscarUsuarios(Pageable pageable) {
+        Usuario usuario = buscarUsuarioLogado();
+        if (usuario.getRole() == Role.ROLE_ADMIN) {
+            return usuarioRepository.findAll(pageable);
+        }
+        throw new PerfilInvalidoException("Tipo de perfil inválido");
     }
 
 }
