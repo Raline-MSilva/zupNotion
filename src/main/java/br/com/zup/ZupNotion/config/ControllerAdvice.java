@@ -26,27 +26,28 @@ public class ControllerAdvice {
         }
         return mensagemDeErros;
     }
+
     @ExceptionHandler(EmailJaExistenteException.class)
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-    public MensagemDeErro tratarExcecaoEmailJaExistenteException(EmailJaExistenteException exception){
+    public MensagemDeErro tratarExcecaoEmailJaExistenteException(EmailJaExistenteException exception) {
         return new MensagemDeErro(exception.getMessage());
     }
 
     @ExceptionHandler(DominioInvalidoException.class)
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-    public MensagemDeErro tratarExcecaoDominioInvalidoException(DominioInvalidoException exception){
+    public MensagemDeErro tratarExcecaoDominioInvalidoException(DominioInvalidoException exception) {
         return new MensagemDeErro(exception.getMessage());
     }
 
     @ExceptionHandler(SenhaInvalidaException.class)
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-    public MensagemDeErro tratarExcecaoSenhaInvalidaException(SenhaInvalidaException exception){
+    public MensagemDeErro tratarExcecaoSenhaInvalidaException(SenhaInvalidaException exception) {
         return new MensagemDeErro(exception.getMessage());
     }
 
     @ExceptionHandler(UsuarioNaoExisteException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public MensagemDeErro tratarExcecaoUsuarioNaoExisteException(UsuarioNaoExisteException exception){
+    public MensagemDeErro tratarExcecaoUsuarioNaoExisteException(UsuarioNaoExisteException exception) {
         return new MensagemDeErro(exception.getMessage());
     }
 
@@ -58,17 +59,17 @@ public class ControllerAdvice {
 
     @ExceptionHandler(TarefaNaoExisteException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public MensagemDeErro tratarTarefaNaoExisteException(TarefaNaoExisteException exception){
+    public MensagemDeErro tratarTarefaNaoExisteException(TarefaNaoExisteException exception) {
         return new MensagemDeErro(exception.getMessage());
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public MensagemDeErro manipularExcecaoDeEnumInvalido(HttpMessageNotReadableException exception){
-        if(exception.getLocalizedMessage().contains("br.com.zup.ZupNotion.models.enums.Prioridade")){
+    public MensagemDeErro manipularExcecaoDeEnumInvalido(HttpMessageNotReadableException exception) {
+        if (exception.getLocalizedMessage().contains("br.com.zup.ZupNotion.models.enums.Prioridade")) {
             return new MensagemDeErro("Prioridade deve ser BAIXA, MEDIA ou ALTA");
         }
-        if(exception.getLocalizedMessage().contains("br.com.zup.ZupNotion.models.enums.Status")){
+        if (exception.getLocalizedMessage().contains("br.com.zup.ZupNotion.models.enums.Status")) {
             return new MensagemDeErro("Status deve ser A_FAZER, EM_ANDAMENTO ou CONCLUIDA");
         }
         return new MensagemDeErro(exception.getLocalizedMessage());
@@ -81,9 +82,15 @@ public class ControllerAdvice {
     }
 
     @ExceptionHandler(MultipartException.class)
-    public ResponseEntity requisicaoSemAnexo(MultipartException exc){
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+    public ResponseEntity requisicaoSemAnexo(MultipartException exc) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 new ResponseMessage("Adicione um arquivo .csv para upload!"));
+    }
+
+    @ExceptionHandler(RoleInvalidoParaEssaRequisicao.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public MensagemDeErro tratarRoleInvalidoException(RoleInvalidoParaEssaRequisicao exception) {
+        return new MensagemDeErro(exception.getMessage());
     }
 
 }
