@@ -40,16 +40,18 @@ public class ConfiguracoesDeSeguranca extends WebSecurityConfigurerAdapter {
 
 
         http.authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/tarefas/**").hasRole("ADMIN")
-                .antMatchers(HttpMethod.POST, "/usuario/**").permitAll()
-                .antMatchers(HttpMethod.POST, "/usuario/cadastraradmin/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.POST, "/tarefas/{\\+d}").hasRole("ADMIN")
+                .antMatchers(HttpMethod.POST, "/usuario/{\\+d}").permitAll()
+                .antMatchers(HttpMethod.POST, "/usuario/cadastraradmin/{\\+d}").hasRole("ADMIN")
                 .antMatchers(HttpMethod.PATCH, "/usuario/esqueciSenha").permitAll()
                 .antMatchers(HttpMethod.GET, "/tarefas/**").permitAll()
                 .antMatchers(HttpMethod.DELETE, ENDPOINT).hasRole("ADMIN")
-                .antMatchers(HttpMethod.PATCH, "/tarefas/alterarStatus/**").hasRole("USER")
-                .antMatchers(HttpMethod.PATCH, "/tarefas/**").hasRole("ADMIN")
-                .anyRequest()
-                .authenticated();
+                .antMatchers(HttpMethod.PATCH, "/tarefas/alterarStatus/{\\+d}").hasRole("USER")
+                .antMatchers(HttpMethod.PATCH, "/tarefas/{\\+d}").hasRole("ADMIN")
+                .antMatchers("/v2/api-docs", "/swagger-resources/configuration/ui", "/swagger-resources",
+                        "/swagger-resources/configuration/security", "/swagger-ui/**", "/webjars/**").permitAll()
+                .and().authorizeRequests()
+                .anyRequest().authenticated();
 
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.addFilter(new FiltroDeAutenticacaoJWT(jwtComponent, authenticationManager()));
@@ -64,11 +66,7 @@ public class ConfiguracoesDeSeguranca extends WebSecurityConfigurerAdapter {
     @Bean
     CorsConfigurationSource configurarCORS() {
         UrlBasedCorsConfigurationSource cors = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedMethod("*");
-        config.addAllowedOrigin("*");
-        config.addAllowedHeader("*");
-        cors.registerCorsConfiguration("/**", config);
+        cors.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
         return cors;
     }
 
