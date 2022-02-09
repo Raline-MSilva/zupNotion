@@ -254,4 +254,17 @@ public class TarefaServiceTest {
 
     }
 
+    @Test
+    public void testarAtribuirTarefaCaminhoNegativo() {
+        Mockito.when(usuarioRepository.findByEmail(usuario.getEmail())).thenReturn(Optional.empty());
+        Mockito.when(emailService.localizarUsuarioPorEmail(usuario.getEmail())).thenReturn(usuario);
+        Mockito.when(usuarioService.buscarUsuarioLogado()).thenReturn(usuario);
+
+        usuario.setTarefas(null);
+        TarefaNaoExisteException exception = Assertions.assertThrows(TarefaNaoExisteException.class, () -> {
+            tarefaService.atribuirTarefa(tarefa.getId(), usuario.getEmail());
+        });
+
+        Assertions.assertEquals("Tarefa não existe", exception.getMessage());
+    }
 }
