@@ -46,6 +46,7 @@ public class TarefaServiceTest {
         tarefa.setTitulo("Testar");
         tarefa.setDescricao("Testar deletar");
         tarefa.setPrioridade(Prioridade.ALTA);
+        tarefa.setStatus(Status.CONCLUIDA);
 
         usuario = new Usuario();
         usuario.setNome("ana");
@@ -70,6 +71,19 @@ public class TarefaServiceTest {
                 LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")));
         Assertions.assertEquals(tarefa.getUsuario(), usuario);
         Assertions.assertEquals(usuario.getTarefas(), tarefa.getUsuario().getTarefas());
+
+    }
+
+    @Test
+    public void testarAlterarDadosDaTarefaCaminhoPositivo(){
+        Mockito.when(tarefaRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(tarefa));
+        Mockito.when(tarefaService.salvarTarefa(Mockito.any())).thenReturn(tarefa);
+        testarLocalizarTarefaPorId();
+        tarefa.setTitulo("ler");
+        tarefa.setDescricao("30 min por dia");
+
+        tarefaService.alterarDadosTarefa(tarefa.getId(), tarefa.getTitulo(), tarefa.getDescricao());
+        Mockito.verify(tarefaRepository, Mockito.times(1)).findById(tarefa.getId());
 
     }
 
