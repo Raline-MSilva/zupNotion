@@ -4,6 +4,7 @@ import br.com.zup.ZupNotion.exceptions.TarefaNaoExisteException;
 import br.com.zup.ZupNotion.models.Tarefa;
 import br.com.zup.ZupNotion.models.Usuario;
 import br.com.zup.ZupNotion.models.enums.Prioridade;
+import br.com.zup.ZupNotion.models.enums.Role;
 import br.com.zup.ZupNotion.models.enums.Status;
 import br.com.zup.ZupNotion.repositories.TarefaRepository;
 import org.junit.jupiter.api.Assertions;
@@ -22,7 +23,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @SpringBootTest
@@ -197,7 +197,7 @@ public class TarefaServiceTest {
     @Test
     public void testarBuscarTodasAsTarefas() {
         Mockito.when(usuarioService.buscarUsuarioLogado()).thenReturn(usuario);
-        usuario.setRole("ROLE_ADMIN");
+        usuario.setRole(Role.ROLE_ADMIN);
         Mockito.when(tarefaRepository.findAll(pageable)).thenReturn(pageTarefas);
         tarefaService.buscarTarefas(String.valueOf(tarefa.getStatus()), String.valueOf(tarefa.getPrioridade()), pageable);
 
@@ -211,7 +211,7 @@ public class TarefaServiceTest {
     @Test
     public void testarBuscarTarefasPorStatus() {
         Mockito.when(usuarioService.buscarUsuarioLogado()).thenReturn(usuario);
-        usuario.setRole("ROLE_USER");
+        usuario.setRole(Role.ROLE_USER);
         tarefa.setStatus(Status.A_FAZER);
         Mockito.when(tarefaRepository.findAllByStatus(tarefa.getStatus(), pageable)).thenReturn(pageTarefas);
         tarefaService.buscarTarefas(String.valueOf(tarefa.getStatus()), String.valueOf(tarefa.getPrioridade()), pageable);
@@ -224,7 +224,7 @@ public class TarefaServiceTest {
     @Test
     public void testarBuscarTarefasPorPrioridade() {
         Mockito.when(usuarioService.buscarUsuarioLogado()).thenReturn(usuario);
-        usuario.setRole("ROLE_USER");
+        usuario.setRole(Role.ROLE_USER);
         String tarefaNull = null;
         tarefa.setPrioridade(Prioridade.BAIXA);
         Mockito.when(tarefaRepository.findAllByPrioridade(tarefa.getPrioridade(), pageable)).thenReturn(pageTarefas);
