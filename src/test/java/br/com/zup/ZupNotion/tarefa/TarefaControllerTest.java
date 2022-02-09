@@ -7,6 +7,7 @@ import br.com.zup.ZupNotion.config.security.JWT.JWTComponent;
 import br.com.zup.ZupNotion.config.security.JWT.UsuarioLoginService;
 import br.com.zup.ZupNotion.controllers.TarefaController;
 import br.com.zup.ZupNotion.exceptions.TarefaNaoExisteException;
+import br.com.zup.ZupNotion.exceptions.UsuarioNaoExisteException;
 import br.com.zup.ZupNotion.models.Tarefa;
 import br.com.zup.ZupNotion.models.Usuario;
 import br.com.zup.ZupNotion.models.dtos.AlterarDadosTarefaDTO;
@@ -445,6 +446,19 @@ public class TarefaControllerTest {
         ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.patch("/tarefas" + "/atribuirTarefa" + "/1")
                         .content(json).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(422));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    public void testarAtribuirTarefaPorIdCaminhoNegativo() throws Exception {
+        informarEmailDTO.setEmail("taline@gmail.com.br");
+        Mockito.doThrow(UsuarioNaoExisteException.class).when(tarefaService).atribuirTarefa(Mockito.anyInt(), Mockito.anyString());
+
+        String json = objectMapper.writeValueAsString(informarEmailDTO);
+        ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.patch("/tarefas" + "/atribuirTarefa" + "/1")
+                .content(json).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is(404));
+
     }
 
 }
