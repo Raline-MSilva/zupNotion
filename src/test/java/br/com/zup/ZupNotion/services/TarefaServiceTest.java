@@ -7,6 +7,7 @@ import br.com.zup.ZupNotion.models.enums.Prioridade;
 import br.com.zup.ZupNotion.models.enums.Role;
 import br.com.zup.ZupNotion.models.enums.Status;
 import br.com.zup.ZupNotion.repositories.TarefaRepository;
+import br.com.zup.ZupNotion.repositories.UsuarioRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,6 +40,10 @@ public class TarefaServiceTest {
 
     @MockBean
     private EmailService emailService;
+
+    @MockBean
+    private UsuarioRepository usuarioRepository;
+
 
     private Tarefa tarefa;
     private Usuario usuario;
@@ -233,6 +238,19 @@ public class TarefaServiceTest {
         Mockito.verify(tarefaRepository, Mockito.times(0)).findAll(pageable);
         Mockito.verify(tarefaRepository, Mockito.times(0)).findAllByStatus(tarefa.getStatus(), pageable);
         Mockito.verify(tarefaRepository, Mockito.times(1)).findAllByPrioridade(tarefa.getPrioridade(), pageable);
+
+    }
+
+    @Test
+    public void testarAtribuirTarefaCaminhoPositivo() {
+        testarLocalizarTarefaPorId();
+        Mockito.when(usuarioRepository.findByEmail(usuario.getEmail())).thenReturn(Optional.of(usuario));
+        Mockito.when(emailService.localizarUsuarioPorEmail(usuario.getEmail())).thenReturn(usuario);
+        Mockito.when(usuarioService.buscarUsuarioLogado()).thenReturn(usuario);
+
+        usuario.setEmail(usuario.getEmail());
+        tarefa.setUsuario(usuario);
+        tarefaService.atribuirTarefa(tarefa.getId(), usuario.getEmail());
 
     }
 
