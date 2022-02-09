@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.MultipartException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,6 +78,12 @@ public class ControllerAdvice {
     public ResponseEntity arquivoMaiorQueOPermitido(MaxUploadSizeExceededException exc) {
         return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(
                 new ResponseMessage("Arquivo maior que 2Mb não permitido!"));
+    }
+
+    @ExceptionHandler(MultipartException.class)
+    public ResponseEntity requisicaoSemAnexo(MultipartException exc){
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                new ResponseMessage("Adicione um arquivo .csv para upload!"));
     }
 
 }

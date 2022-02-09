@@ -92,7 +92,8 @@ public class TarefaController {
         }else if(!tarefaService.validarSeArquivoCSV(file)){
             message = "Não foi possível realizar o upload do arquivo: " + file.getOriginalFilename() + "!";
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
-        } else{
+        }
+        else {
             message = "Adicione um arquivo .csv para upload!";
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseMessage(message));
         }
