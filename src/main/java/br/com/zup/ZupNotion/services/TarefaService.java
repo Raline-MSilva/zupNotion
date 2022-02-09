@@ -54,7 +54,7 @@ public class TarefaService {
 
         Usuario usuario = usuarioService.buscarUsuarioLogado();
 
-        if (Objects.equals(usuario.getRole(), "ROLE_ADMIN")) {
+        if (Objects.equals(String.valueOf(usuario.getRole()), "ROLE_ADMIN")) {
             return tarefaRepository.findAll(pageable);
         } else {
             if (status != null) {
