@@ -2,6 +2,7 @@ package br.com.zup.ZupNotion.services;
 
 import br.com.zup.ZupNotion.config.security.JWT.UsuarioLogado;
 import br.com.zup.ZupNotion.exceptions.PerfilInvalidoException;
+import br.com.zup.ZupNotion.exceptions.RoleInvalidoParaEssaRequisicao;
 import br.com.zup.ZupNotion.exceptions.UsuarioNaoExisteException;
 import br.com.zup.ZupNotion.models.Tarefa;
 import br.com.zup.ZupNotion.models.Usuario;
@@ -75,7 +76,7 @@ public class UsuarioService {
         if (usuario.getRole() == Role.ROLE_ADMIN) {
             return usuarioRepository.findAll(pageable);
         }
-        throw new PerfilInvalidoException("Tipo de perfil inválido");
+        throw new RoleInvalidoParaEssaRequisicao("Requisição permitida apenas para admin.");
     }
 
 }
