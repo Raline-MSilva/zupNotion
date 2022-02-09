@@ -435,4 +435,16 @@ public class TarefaControllerTest {
                 .andExpect(status().is(200));
     }
 
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    public void testarAtribuirTarefaPorIdValidacaoEmailEmBranco() throws Exception{
+        informarEmailDTO.setEmail("");
+        Mockito.doNothing().when(tarefaService).atribuirTarefa(Mockito.anyInt(), Mockito.anyString());
+        String json = objectMapper.writeValueAsString(informarEmailDTO);
+
+        ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.patch("/tarefas" + "/atribuirTarefa" + "/1")
+                        .content(json).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is(422));
+    }
+
 }
