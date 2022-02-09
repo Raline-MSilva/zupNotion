@@ -1,19 +1,22 @@
 package br.com.zup.ZupNotion.controllers;
 
 import br.com.zup.ZupNotion.models.Usuario;
-import br.com.zup.ZupNotion.models.dtos.InformarEmailDTO;
+import br.com.zup.ZupNotion.models.dtos.*;
 import br.com.zup.ZupNotion.services.SenhaService;
 import br.com.zup.ZupNotion.services.UsuarioService;
-import br.com.zup.ZupNotion.models.dtos.AlterarSenhaDTO;
-import br.com.zup.ZupNotion.models.dtos.CadastroUsuarioDTO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/usuario")
@@ -57,4 +60,16 @@ public class UsuarioController {
     public void deletarUsuario (@RequestBody @Valid InformarEmailDTO informarEmailDTO){
         usuarioService.deletarUsuario(informarEmailDTO.getEmail());
     }
+
+    @GetMapping
+    @ApiOperation(value = "Método utilizado pelo admin para listar usuários")
+    public Page<DadosUsuarioDTO> listarUsuarios(Pageable pageable){
+
+        List<DadosUsuarioDTO> usuarios = usuarioService.buscarUsuarios(pageable).stream()
+                .map(usuario -> modelMapper.map(usuario, DadosUsuarioDTO.class)).collect(Collectors.toList());
+
+        usuarioService.buscarUsuarios(pageable);
+        return new PageImpl<>(usuarios, pageable, usuarios.size());
+    }
+
 }
