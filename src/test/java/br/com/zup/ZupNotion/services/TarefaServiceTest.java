@@ -240,6 +240,21 @@ public class TarefaServiceTest {
         Mockito.verify(tarefaRepository, Mockito.times(1)).findAllByPrioridade(tarefa.getPrioridade(), pageable);
 
     }
+    @Test
+    public void testarRetornoBuscaDasTarefas() {
+        Mockito.when(usuarioService.buscarUsuarioLogado()).thenReturn(usuario);
+        usuario.setRole(Role.ROLE_USER);
+        String tarefaStatus = null;
+        String tarefaPrioridade = null;
+        Mockito.when(tarefaRepository.findAllByUsuario(usuario, pageable)).thenReturn(pageTarefas);
+        tarefaService.buscarTarefas(tarefaStatus, tarefaPrioridade, pageable);
+
+        Mockito.verify(tarefaRepository, Mockito.times(1)).findAllByUsuario(usuario, pageable);
+        Mockito.verify(tarefaRepository, Mockito.times(0)).findAllByStatus(tarefa.getStatus(), pageable);
+        Mockito.verify(tarefaRepository, Mockito.times(0)).findAllByPrioridade(tarefa.getPrioridade(), pageable);
+
+
+    }
 
     @Test
     public void testarAtribuirTarefaCaminhoPositivo() {
@@ -267,4 +282,5 @@ public class TarefaServiceTest {
 
         Assertions.assertEquals("Tarefa não existe", exception.getMessage());
     }
+
 }
