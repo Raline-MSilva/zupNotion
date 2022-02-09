@@ -99,4 +99,11 @@ public class TarefaController {
         }
     }
 
+    @PatchMapping("/atribuirTarefa/{id}")
+    @ApiOperation(value = "Método utilizado pelo admin para atribuir tarefa a um funcionário")
+    public void atribuirTarefaPorId(@RequestBody @Valid DeletarUsuarioDTO deletarUsuarioDTO,
+                                   @PathVariable Integer id) {
+        tarefaService.atribuirTarefa(id, deletarUsuarioDTO.getEmail());
+    }
+
 }
