@@ -8,7 +8,7 @@ import br.com.zup.ZupNotion.exceptions.UsuarioNaoExisteException;
 import br.com.zup.ZupNotion.models.Usuario;
 import br.com.zup.ZupNotion.models.dtos.AlterarSenhaDTO;
 import br.com.zup.ZupNotion.models.dtos.CadastroUsuarioDTO;
-import br.com.zup.ZupNotion.models.dtos.DeletarUsuarioDTO;
+import br.com.zup.ZupNotion.models.dtos.InformarEmailDTO;
 import br.com.zup.ZupNotion.services.EmailService;
 import br.com.zup.ZupNotion.services.SenhaService;
 import br.com.zup.ZupNotion.services.UsuarioService;
@@ -55,7 +55,7 @@ public class UsuarioControllerTest {
     private Usuario usuario;
     private CadastroUsuarioDTO cadastroUsuarioDTO;
     private AlterarSenhaDTO alterarSenhaDTO;
-    private DeletarUsuarioDTO deletarUsuarioDTO;
+    private InformarEmailDTO informarEmailDTO;
 
     @BeforeEach
     public void setup() {
@@ -76,8 +76,8 @@ public class UsuarioControllerTest {
         alterarSenhaDTO.setEmail("fulano@zup.com.br");
         alterarSenhaDTO.setSenha("AC@432ab");
 
-        deletarUsuarioDTO = new DeletarUsuarioDTO();
-        deletarUsuarioDTO.setEmail("fulano@zup.com.br");
+        informarEmailDTO = new InformarEmailDTO();
+        informarEmailDTO.setEmail("fulano@zup.com.br");
 
     }
 
@@ -161,9 +161,9 @@ public class UsuarioControllerTest {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void testarDeletarUsuario() throws Exception {
         Mockito.doNothing().when(usuarioService).deletarUsuario(Mockito.anyString());
-        String json = objectMapper.writeValueAsString(deletarUsuarioDTO);
+        String json = objectMapper.writeValueAsString(informarEmailDTO);
 
-        Assertions.assertEquals(deletarUsuarioDTO.getEmail(), usuario.getEmail());
+        Assertions.assertEquals(informarEmailDTO.getEmail(), usuario.getEmail());
         ResultActions resultado = realizarRequisicao(usuario, 204, "DELETE", "/deletarUsuario");
         String jsonResposta = resultado.andReturn().getResponse().getContentAsString();
     }
