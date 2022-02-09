@@ -4,7 +4,9 @@ import br.com.zup.ZupNotion.components.Conversor;
 import br.com.zup.ZupNotion.config.security.JWT.JWTComponent;
 import br.com.zup.ZupNotion.config.security.JWT.UsuarioLoginService;
 import br.com.zup.ZupNotion.controllers.UsuarioController;
+import br.com.zup.ZupNotion.exceptions.PerfilInvalidoException;
 import br.com.zup.ZupNotion.exceptions.UsuarioNaoExisteException;
+import br.com.zup.ZupNotion.models.Tarefa;
 import br.com.zup.ZupNotion.models.Usuario;
 import br.com.zup.ZupNotion.models.dtos.AlterarSenhaDTO;
 import br.com.zup.ZupNotion.models.dtos.CadastroUsuarioDTO;
@@ -16,10 +18,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -29,6 +36,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest({UsuarioController.class, Conversor.class, UsuarioLoginService.class, JWTComponent.class})
 public class UsuarioControllerTest {
@@ -56,6 +67,8 @@ public class UsuarioControllerTest {
     private CadastroUsuarioDTO cadastroUsuarioDTO;
     private AlterarSenhaDTO alterarSenhaDTO;
     private InformarEmailDTO informarEmailDTO;
+    private Page<Usuario> pageUsuario;
+    private Pageable pageable;
 
     @BeforeEach
     public void setup() {
@@ -78,6 +91,13 @@ public class UsuarioControllerTest {
 
         informarEmailDTO = new InformarEmailDTO();
         informarEmailDTO.setEmail("fulano@zup.com.br");
+
+        List<Usuario> usuarios = new ArrayList<>();
+        usuarios.add(usuario);
+
+        pageable = PageRequest.of(0, usuarios.size());
+
+        pageUsuario = new PageImpl(usuarios, pageable, usuarios.size());
 
     }
 
@@ -176,5 +196,25 @@ public class UsuarioControllerTest {
         ResultActions resultado = realizarRequisicao(usuario, 404, "DELETE", "/deletarUsuario");
         String jsonResposta = resultado.andReturn().getResponse().getContentAsString();
     }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    public void testarBuscarUsuarios() throws Exception {
+        ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
+        Mockito.when(usuarioService.buscarUsuarios(pageableCaptor.capture())).thenReturn(pageUsuario);
+        ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.get("/usuario")
+                        .header("Authorization", "admin")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is(200));
+
+
+        PageRequest pageable = (PageRequest) pageableCaptor.getValue();
+        Assertions.assertNotNull(pageable);
+        Assertions.assertEquals(pageable.getPageSize(), 20);
+        Assertions.assertEquals(pageable.getPageNumber(), 0);
+
+    }
+
+
 
 }
