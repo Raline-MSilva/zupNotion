@@ -5,7 +5,7 @@ import lombok.Data;
 import javax.validation.constraints.NotBlank;
 
 @Data
-public class DeletarUsuarioDTO {
+public class InformarEmailDTO {
 
     @NotBlank(message = "{validacao.not-blank}")
     private String email;

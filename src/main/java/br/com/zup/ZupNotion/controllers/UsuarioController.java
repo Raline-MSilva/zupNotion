@@ -1,7 +1,7 @@
 package br.com.zup.ZupNotion.controllers;
 
 import br.com.zup.ZupNotion.models.Usuario;
-import br.com.zup.ZupNotion.models.dtos.DeletarUsuarioDTO;
+import br.com.zup.ZupNotion.models.dtos.InformarEmailDTO;
 import br.com.zup.ZupNotion.services.SenhaService;
 import br.com.zup.ZupNotion.services.UsuarioService;
 import br.com.zup.ZupNotion.models.dtos.AlterarSenhaDTO;
@@ -54,7 +54,7 @@ public class UsuarioController {
     @DeleteMapping("/deletarUsuario")
     @ApiOperation(value = "Método responsável por deletar um usuário")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deletarUsuario (@RequestBody @Valid DeletarUsuarioDTO deletarUsuarioDTO){
-        usuarioService.deletarUsuario(deletarUsuarioDTO.getEmail());
+    public void deletarUsuario (@RequestBody @Valid InformarEmailDTO informarEmailDTO){
+        usuarioService.deletarUsuario(informarEmailDTO.getEmail());
     }
 }
