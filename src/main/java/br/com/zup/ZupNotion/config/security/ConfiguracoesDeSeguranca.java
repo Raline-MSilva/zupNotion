@@ -40,14 +40,14 @@ public class ConfiguracoesDeSeguranca extends WebSecurityConfigurerAdapter {
 
 
         http.authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/tarefas/{\\+d}").hasRole("ADMIN")
-                .antMatchers(HttpMethod.POST, "/usuario/{\\+d}").permitAll()
-                .antMatchers(HttpMethod.POST, "/usuario/cadastraradmin/{\\+d}").hasRole("ADMIN")
+                .antMatchers(HttpMethod.POST, "/tarefas/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.POST, "/usuario/**").permitAll()
+                .antMatchers(HttpMethod.POST, "/usuario/cadastraradmin/**").hasRole("ADMIN")
                 .antMatchers(HttpMethod.PATCH, "/usuario/esqueciSenha").permitAll()
                 .antMatchers(HttpMethod.GET, "/tarefas/**").permitAll()
                 .antMatchers(HttpMethod.DELETE, ENDPOINT).hasRole("ADMIN")
-                .antMatchers(HttpMethod.PATCH, "/tarefas/alterarStatus/{\\+d}").hasRole("USER")
-                .antMatchers(HttpMethod.PATCH, "/tarefas/{\\+d}").hasRole("ADMIN")
+                .antMatchers(HttpMethod.PATCH, "/tarefas/alterarStatus/**").hasRole("USER")
+                .antMatchers(HttpMethod.PATCH, "/tarefas/**").hasRole("ADMIN")
                 .antMatchers("/v2/api-docs", "/swagger-resources/configuration/ui", "/swagger-resources",
                         "/swagger-resources/configuration/security", "/swagger-ui/**", "/webjars/**").permitAll()
                 .and().authorizeRequests()
