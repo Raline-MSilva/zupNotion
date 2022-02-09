@@ -48,5 +48,12 @@ public class SenhaServiceTest {
         Assertions.assertEquals(usuarioRetornado, usuarioCadastrado);
     }
 
+    @Test
+    public void testarCriptografarSenha(){
+        String senhaCriptografada = "vgcsdhjd";
+        Mockito.when(senhaService.criptografarSenha(usuario.getSenha())).thenReturn(senhaCriptografada);
+
+        Assertions.assertNotEquals(usuario.getSenha(), senhaCriptografada);
+    }
 
 }
