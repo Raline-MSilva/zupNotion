@@ -13,11 +13,15 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @SpringBootTest
@@ -38,6 +42,8 @@ public class TarefaServiceTest {
     private Tarefa tarefa;
     private Usuario usuario;
     private Usuario usuario2;
+    private Pageable pageable;
+    private Page<Tarefa> pageTarefas;
 
     @BeforeEach
     public void setup() {
@@ -59,6 +65,8 @@ public class TarefaServiceTest {
 
         usuario2 = new Usuario();
         usuario2.setNome("lia");
+
+        pageable = PageRequest.of(0, tarefas.size());
 
     }
 
@@ -181,6 +189,21 @@ public class TarefaServiceTest {
         tarefaService.salvarTarefa(tarefa);
 
         Mockito.verify(tarefaRepository, Mockito.times(1)).save(tarefa);
+
+    }
+
+    @Test
+    public void testarBuscarTodasAsTarefas() {
+        Mockito.when(usuarioService.buscarUsuarioLogado()).thenReturn(usuario);
+        usuario.setRole("ROLE_ADMIN");
+        Mockito.when(tarefaRepository.findAll(pageable)).thenReturn(pageTarefas);
+        tarefaService.buscarTarefas(String.valueOf(tarefa.getStatus()), String.valueOf(tarefa.getPrioridade()), pageable);
+
+
+
+        Mockito.verify(tarefaRepository, Mockito.times(1)).findAll(pageable);
+        Mockito.verify(tarefaRepository, Mockito.times(0)).findAllByStatus(tarefa.getStatus(), pageable);
+        Mockito.verify(tarefaRepository, Mockito.times(0)).findAllByPrioridade(tarefa.getPrioridade(), pageable);
 
     }
 
