@@ -215,6 +215,13 @@ public class UsuarioControllerTest {
 
     }
 
+    @Test
+    @WithMockUser(username = "admin", roles = {"USER", ""})
+    public void testarBuscarUsuariosRoleInvalido() throws Exception {
+        Mockito.doThrow(PerfilInvalidoException.class).when(usuarioService).deletarUsuario(usuario.getEmail());
 
+        ResultActions resultado = realizarRequisicao(usuario, 403, "GET", "");
+        String jsonResposta = resultado.andReturn().getResponse().getContentAsString();
+    }
 
 }
