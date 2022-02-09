@@ -2,6 +2,7 @@ package br.com.zup.ZupNotion.tarefa;
 
 import br.com.zup.ZupNotion.components.Conversor;
 import br.com.zup.ZupNotion.components.TarefaImportacaoCSV;
+import br.com.zup.ZupNotion.config.ResponseMessage;
 import br.com.zup.ZupNotion.config.security.JWT.JWTComponent;
 import br.com.zup.ZupNotion.config.security.JWT.UsuarioLoginService;
 import br.com.zup.ZupNotion.controllers.TarefaController;
@@ -29,20 +30,22 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.function.Function;
+
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest({TarefaController.class, Conversor.class, UsuarioLoginService.class, JWTComponent.class})
 
@@ -62,7 +65,8 @@ public class TarefaControllerTest {
     @MockBean
     private UsuarioService usuarioService;
 
-
+    @Autowired
+    private WebApplicationContext webApplicationContext;
 
 
     @Autowired
@@ -77,6 +81,7 @@ public class TarefaControllerTest {
     private AlterarDadosTarefaDTO alterarDadosTarefaDTO;
     private Page<Tarefa> pageTarefa;
     private Pageable pageable;
+    private MultipartFile file;
 
     public static final String DESCRICAO_SIZE = "Lorem ipsum dolor sit amet, consectetur adipisicing elit. " +
             "Facilis enim eum ad nam temporibus et unde quidem quae quis, velit consectetur fugit nobis ducimus ipsum "
@@ -122,7 +127,7 @@ public class TarefaControllerTest {
         List<Tarefa> tarefas = new ArrayList<>();
         tarefas.add(tarefa);
 
-        pageable =  PageRequest.of(0, tarefas.size());
+        pageable = PageRequest.of(0, tarefas.size());
 
         pageTarefa = new PageImpl(tarefas, pageable, tarefas.size());
 
@@ -137,7 +142,7 @@ public class TarefaControllerTest {
 
         ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.post("/tarefas")
                         .content(json).contentType(MediaType.APPLICATION_JSON))
-                .andExpect((MockMvcResultMatchers.status().is(201)));
+                .andExpect((status().is(201)));
 
         String jsonResposta = resultado.andReturn().getResponse().getContentAsString();
         RespostaTarefaDTO respostaTarefaDTO = objectMapper.readValue(jsonResposta, RespostaTarefaDTO.class);
@@ -152,7 +157,7 @@ public class TarefaControllerTest {
 
         ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.post("/tarefas")
                         .content(json).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().is(422));
+                .andExpect(status().is(422));
     }
 
     @Test
@@ -164,7 +169,7 @@ public class TarefaControllerTest {
 
         ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.post("/tarefas")
                         .content(json).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().is(422));
+                .andExpect(status().is(422));
     }
 
     @Test
@@ -176,7 +181,7 @@ public class TarefaControllerTest {
 
         ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.post("/tarefas")
                         .content(json).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().is(422));
+                .andExpect(status().is(422));
     }
 
     @Test
@@ -188,7 +193,7 @@ public class TarefaControllerTest {
 
         ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.post("/tarefas")
                         .content(json).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().is(422));
+                .andExpect(status().is(422));
     }
 
     @Test
@@ -200,7 +205,7 @@ public class TarefaControllerTest {
 
         ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.post("/tarefas")
                         .content(json).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().is(422));
+                .andExpect(status().is(422));
     }
 
     @Test
@@ -212,7 +217,7 @@ public class TarefaControllerTest {
 
         ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.post("/tarefas")
                         .content(json).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().is(422));
+                .andExpect(status().is(422));
     }
 
     private ResultActions realizarRequisicao(Object object, int statusEsperado, String httpVerbo, String complemento) throws Exception {
@@ -221,7 +226,7 @@ public class TarefaControllerTest {
 
         return mockMvc.perform(MockMvcRequestBuilders.request(httpVerbo, uri)
                         .content(json).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().is(statusEsperado));
+                .andExpect(status().is(statusEsperado));
     }
 
     @Test
@@ -234,7 +239,7 @@ public class TarefaControllerTest {
         Assertions.assertNotEquals(alterarStatusTarefaDTO.getStatus(), tarefa.getStatus());
         ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.patch("/tarefas" + "/alterarStatus" + "/1")
                         .content(json).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().is(200));
+                .andExpect(status().is(200));
     }
 
     @Test
@@ -244,8 +249,8 @@ public class TarefaControllerTest {
 
         String json = objectMapper.writeValueAsString(alterarStatusTarefaDTO);
         ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.patch("/tarefas" + "/alterarStatus" + "/1")
-                .content(json).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().is(404));
+                        .content(json).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is(404));
     }
 
     @Test
@@ -259,7 +264,7 @@ public class TarefaControllerTest {
         Assertions.assertNotEquals(alterarDadosTarefaDTO.getTitulo(), tarefa.getTitulo());
         ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.patch("/tarefas" + "/1")
                         .content(json).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().is(200));
+                .andExpect(status().is(200));
     }
 
     @Test
@@ -270,7 +275,7 @@ public class TarefaControllerTest {
         String json = objectMapper.writeValueAsString(alterarDadosTarefaDTO);
         ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.patch("/tarefas" + "/1")
                         .content(json).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().is(404));
+                .andExpect(status().is(404));
     }
 
     @Test
@@ -284,7 +289,7 @@ public class TarefaControllerTest {
         Assertions.assertNotEquals(alterarDadosTarefaDTO.getDescricao(), tarefa.getDescricao());
         ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.patch("/tarefas" + "/1")
                         .content(json).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().is(200));
+                .andExpect(status().is(200));
     }
 
     @Test
@@ -295,7 +300,7 @@ public class TarefaControllerTest {
         String json = objectMapper.writeValueAsString(alterarDadosTarefaDTO);
         ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.patch("/tarefas" + "/1")
                         .content(json).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().is(404));
+                .andExpect(status().is(404));
     }
 
     @Test
@@ -305,7 +310,7 @@ public class TarefaControllerTest {
 
         ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.delete("/tarefas/1")
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().is(204));
+                .andExpect(status().is(204));
     }
 
     @Test
@@ -315,7 +320,7 @@ public class TarefaControllerTest {
 
         ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.delete("/tarefas/1")
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().is(404));
+                .andExpect(status().is(404));
 
     }
 
@@ -323,12 +328,12 @@ public class TarefaControllerTest {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void testarBuscarTarefas() throws Exception {
         ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
-        Mockito.when(tarefaService.buscarTarefas(Mockito.anyString(),Mockito.anyString(), pageableCaptor.capture())).thenReturn(pageTarefa);
+        Mockito.when(tarefaService.buscarTarefas(Mockito.anyString(), Mockito.anyString(), pageableCaptor.capture())).thenReturn(pageTarefa);
         ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.get("/tarefas")
                         .param("size", "2")
                         .param("page", "0").header("Authorization", "xablau")
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().is(200));
+                .andExpect(status().is(200));
 
 
         PageRequest pageable = (PageRequest) pageableCaptor.getValue();
@@ -346,7 +351,7 @@ public class TarefaControllerTest {
         ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.get("/tarefas")
                         .param("status", "CONCLUIDA")
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().is(200));
+                .andExpect(status().is(200));
 
         ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
         Mockito.verify(tarefaService).buscarTarefas(Mockito.anyString(), Mockito.anyString(),
@@ -365,7 +370,7 @@ public class TarefaControllerTest {
         ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.get("/tarefas")
                         .param("prioridade", "ALTA")
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().is(200));
+                .andExpect(status().is(200));
 
         ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
         Mockito.verify(tarefaService).buscarTarefas(Mockito.anyString(), Mockito.anyString(),
@@ -375,6 +380,41 @@ public class TarefaControllerTest {
         Assertions.assertNotNull(pageable);
         Assertions.assertEquals(pageable.getPageSize(), 2);
         Assertions.assertEquals(pageable.getPageNumber(), 0);
+
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    public void testarAnexarArquivoCSV() throws Exception {
+        MockMultipartFile file = new MockMultipartFile("arquivo", "arquivo.csv", "text/csv",
+                "arquivo.csv".getBytes());
+        String message = "Upload realizado com sucesso: " + file.getOriginalFilename();
+
+        Mockito.when(tarefaService.validarSeArquivoCSV(Mockito.any())).thenReturn(true);
+        Mockito.doNothing().when(tarefaService).salvarCSV(Mockito.any());
+
+        ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.multipart("/tarefas/arquivosCSV")
+                        .file("file", "arquivo.csv".getBytes())
+                        .characterEncoding("UTF-8"))
+                .andExpect(status().is(200));
+
+        Assertions.assertEquals("Upload realizado com sucesso: arquivo.csv",
+                new ResponseMessage(message).getMessage());
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    public void testarArquivoQueNaoECSV() throws Exception {
+        MockMultipartFile file = new MockMultipartFile("arquivo", "arquivo.txt", "text/txt",
+                "arquivo.txt".getBytes());
+
+        Mockito.when(tarefaService.validarSeArquivoCSV(Mockito.any())).thenReturn(false);
+        Mockito.doNothing().when(tarefaService).salvarCSV(Mockito.any());
+
+
+        MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/tarefas/arquivosCSV").file("file", "arquivo.txt".getBytes()))
+                .andExpect(status().is(417));
 
     }
 
