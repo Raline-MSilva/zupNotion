@@ -7,11 +7,13 @@ import br.com.zup.ZupNotion.config.security.JWT.JWTComponent;
 import br.com.zup.ZupNotion.config.security.JWT.UsuarioLoginService;
 import br.com.zup.ZupNotion.controllers.TarefaController;
 import br.com.zup.ZupNotion.exceptions.TarefaNaoExisteException;
+import br.com.zup.ZupNotion.exceptions.UsuarioNaoExisteException;
 import br.com.zup.ZupNotion.models.Tarefa;
 import br.com.zup.ZupNotion.models.Usuario;
 import br.com.zup.ZupNotion.models.dtos.AlterarDadosTarefaDTO;
 import br.com.zup.ZupNotion.models.dtos.AlterarStatusTarefaDTO;
 import br.com.zup.ZupNotion.models.dtos.CadastroTarefaDTO;
+import br.com.zup.ZupNotion.models.dtos.InformarEmailDTO;
 import br.com.zup.ZupNotion.models.dtos.RespostaTarefaDTO;
 import br.com.zup.ZupNotion.models.enums.Prioridade;
 import br.com.zup.ZupNotion.models.enums.Status;
@@ -82,6 +84,7 @@ public class TarefaControllerTest {
     private Page<Tarefa> pageTarefa;
     private Pageable pageable;
     private MultipartFile file;
+    private InformarEmailDTO informarEmailDTO;
 
     public static final String DESCRICAO_SIZE = "Lorem ipsum dolor sit amet, consectetur adipisicing elit. " +
             "Facilis enim eum ad nam temporibus et unde quidem quae quis, velit consectetur fugit nobis ducimus ipsum "
@@ -123,6 +126,9 @@ public class TarefaControllerTest {
         alterarDadosTarefaDTO = new AlterarDadosTarefaDTO();
         alterarDadosTarefaDTO.setTitulo("novo titulo");
         alterarDadosTarefaDTO.setDescricao("nova descricao");
+
+        informarEmailDTO = new InformarEmailDTO();
+        informarEmailDTO.setEmail("taline@zup.com.br");
 
         List<Tarefa> tarefas = new ArrayList<>();
         tarefas.add(tarefa);
@@ -415,6 +421,43 @@ public class TarefaControllerTest {
         MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
         mockMvc.perform(MockMvcRequestBuilders.multipart("/tarefas/arquivosCSV").file("file", "arquivo.txt".getBytes()))
                 .andExpect(status().is(417));
+
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    public void testarAtribuirTarefaPorIdCaminhoPositivo() throws Exception{
+        informarEmailDTO.setEmail("maria@zup.com.br");
+        Mockito.doNothing().when(tarefaService).atribuirTarefa(Mockito.anyInt(), Mockito.anyString());
+        String json = objectMapper.writeValueAsString(informarEmailDTO);
+
+        ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.patch("/tarefas" + "/atribuirTarefa" + "/1")
+                        .content(json).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is(200));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    public void testarAtribuirTarefaPorIdValidacaoEmailEmBranco() throws Exception{
+        informarEmailDTO.setEmail("");
+        Mockito.doNothing().when(tarefaService).atribuirTarefa(Mockito.anyInt(), Mockito.anyString());
+        String json = objectMapper.writeValueAsString(informarEmailDTO);
+
+        ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.patch("/tarefas" + "/atribuirTarefa" + "/1")
+                        .content(json).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is(422));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    public void testarAtribuirTarefaPorIdCaminhoNegativo() throws Exception {
+        informarEmailDTO.setEmail("taline@gmail.com.br");
+        Mockito.doThrow(UsuarioNaoExisteException.class).when(tarefaService).atribuirTarefa(Mockito.anyInt(), Mockito.anyString());
+
+        String json = objectMapper.writeValueAsString(informarEmailDTO);
+        ResultActions resultado = mockMvc.perform(MockMvcRequestBuilders.patch("/tarefas" + "/atribuirTarefa" + "/1")
+                .content(json).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is(404));
 
     }
 
