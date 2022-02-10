@@ -1,5 +1,6 @@
 package br.com.zup.ZupNotion.services;
 
+import br.com.zup.ZupNotion.components.TarefaImportacaoCSV;
 import br.com.zup.ZupNotion.exceptions.TarefaNaoExisteException;
 import br.com.zup.ZupNotion.models.Tarefa;
 import br.com.zup.ZupNotion.models.Usuario;
@@ -19,7 +20,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.mock.web.MockMultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -44,12 +47,16 @@ public class TarefaServiceTest {
     @MockBean
     private UsuarioRepository usuarioRepository;
 
+    @MockBean
+    private TarefaImportacaoCSV importacaoCSV;
+
 
     private Tarefa tarefa;
     private Usuario usuario;
     private Usuario usuario2;
     private Pageable pageable;
     private Page<Tarefa> pageTarefas;
+    private List<Tarefa> tarefas;
 
     @BeforeEach
     public void setup() {
@@ -65,9 +72,10 @@ public class TarefaServiceTest {
         tarefa.setUsuario(usuario);
         usuario.setEmail("ar@zup.com.br");
 
-        List<Tarefa> tarefas = new ArrayList<>();
+        tarefas = new ArrayList<>();
         usuario.setTarefas(tarefas);
         usuario.getTarefas().add(tarefa);
+        tarefas.add(tarefa);
 
         usuario2 = new Usuario();
         usuario2.setNome("lia");
@@ -281,6 +289,31 @@ public class TarefaServiceTest {
         });
 
         Assertions.assertEquals("Tarefa não existe", exception.getMessage());
+    }
+
+    @Test
+    public void testarValidacaoDeArquivoCSV(){
+        MockMultipartFile file = new MockMultipartFile("arquivo", "arquivo.csv", "text/csv",
+                "arquivo.csv".getBytes());
+
+        Mockito.when(importacaoCSV.verificarFormatoCSV(file)).thenReturn(true);
+
+    }
+
+    @Test
+    public void testarValidacaoDeArquivoNaoCSV(){
+        MockMultipartFile file = new MockMultipartFile("arquivo", "arquivo.txt", "text/txt",
+                "arquivo.txt".getBytes());
+
+        Mockito.when(importacaoCSV.verificarFormatoCSV(file)).thenReturn(false);
+
+    }
+
+    @Test
+    public void testarImportacaoCSV() throws IOException {
+        MockMultipartFile file = new MockMultipartFile("arquivo", "arquivo.csv", "text/csv",
+                "arquivo.csv".getBytes());
+        Mockito.when(importacaoCSV.salvarTarefasComUsuario(file.getInputStream())).thenReturn(tarefas);
     }
 
 }
