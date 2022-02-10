@@ -4,7 +4,6 @@ import br.com.zup.ZupNotion.config.security.JWT.UsuarioLogado;
 import br.com.zup.ZupNotion.exceptions.PerfilInvalidoException;
 import br.com.zup.ZupNotion.exceptions.RoleInvalidoParaEssaRequisicao;
 import br.com.zup.ZupNotion.exceptions.UsuarioNaoExisteException;
-import br.com.zup.ZupNotion.models.Tarefa;
 import br.com.zup.ZupNotion.models.Usuario;
 import br.com.zup.ZupNotion.models.enums.Role;
 import br.com.zup.ZupNotion.repositories.UsuarioRepository;
@@ -43,7 +42,7 @@ public class UsuarioService {
             usuario.setSenha(senhaService.criptografarSenha(usuario.getSenha()));
             return usuarioRepository.save(usuario);
         }
-        throw new PerfilInvalidoException("Tipo de perfil inválido");
+        throw new RoleInvalidoParaEssaRequisicao("Requisição permitida apenas para admin");
     }
 
     public void verificarRole(String role) {
