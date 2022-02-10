@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
 @Service
 public class SenhaService {
 
@@ -18,8 +20,12 @@ public class SenhaService {
 
     public Usuario alterarSenha(Usuario usuario) {
         Usuario usuarioBanco = emailService.localizarUsuarioPorEmail(usuario.getEmail());
-        usuarioBanco.setSenha(criptografarSenha(usuario.getSenha()));
-        return usuarioRepository.save(usuarioBanco);
+        if (Objects.equals(usuarioBanco.getPerguntaDeSeguranca(), usuario.getPerguntaDeSeguranca()) &&
+                Objects.equals(usuarioBanco.getRespostaDeSeguranca(), usuario.getRespostaDeSeguranca())) {
+            usuarioBanco.setSenha(criptografarSenha(usuario.getSenha()));
+            return usuarioRepository.save(usuarioBanco);
+        }
+        throw new RuntimeException("dados inválidos");
     }
 
     public String criptografarSenha(String senha){

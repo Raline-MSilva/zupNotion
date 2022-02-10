@@ -18,6 +18,7 @@ public class Usuario {
     private String id;
     @Column(nullable = false, unique = true)
     private String email;
+    private String sobrenome;
     @Column
     private String nome;
     @Column(nullable = false)
@@ -26,5 +27,9 @@ public class Usuario {
     private List<Tarefa> tarefas;
     @Enumerated(EnumType.STRING)
     private Role role;
+    @Column(nullable = false)
+    private String perguntaDeSeguranca;
+    @Column(nullable = false)
+    private String respostaDeSeguranca;
 
 }
