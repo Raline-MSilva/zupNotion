@@ -54,6 +54,6 @@ Funcionalidades documentadas via Swagger e Postman Collection.
 
 - Swagger:  http://localhost:8080/swagger-ui/index.html
 
-- Postman collection:
+- Postman collection: [Zup-Notion.postman_collection.zip](https://github.com/Raline1/zupNotion/blob/main/Zup-Notion.postman_collection.zip)
 
 
