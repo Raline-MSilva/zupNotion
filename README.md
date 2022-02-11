@@ -52,7 +52,7 @@ Será possível testar a aplicaçao em: localhost:8080/
 
 Funcionalidades documentadas via Swagger e Postman Collection.
 
-- Swagger:  localhost:8080/swagger-ui.html 
+- Swagger:  http://localhost:8080/swagger-ui/index.html
 
 - Postman collection:
 
